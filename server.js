@@ -135,23 +135,12 @@ app.post('/user_login', function(req, res) {
 			if(err) console.log(err)
 			console.log("Checking if user exists");
 			db = res
-			var exists = true;
-			
-			/*db.collection('AWebsiteHasNoName').find({user_id: user}).toArray(function(err,res) {
-				if (res.length == []) { //if user doesn't exist then make one
-					console.log("making new user");
-					exists = false;
-				} else {
-					console.log("user already exists");
-				}
-			});*/
-			console.log(exists);
-			if (db.collection('AWebsiteHasNoName').find({user_id: user}).toArray() == []) {
-				console.log("making new user");
-				db.collection('AWebsiteHasNoName').insertOne({user_id: user, proteinList : [], carbList : [], dairyList : [], vegList : [], fruitList : [], miscList : []});
-			} else {
-				console.log("user already exists");
-			}
+
+			db.collection('AWebsiteHasNoName').update(
+				{user_id: user}, 
+				{$setOnInsert: {user_id: user, proteinList : [], carbList : [], dairyList : [], vegList : [], fruitList : [], miscList : []}}, 
+				{upsert : true});
+
 			db.close();
 		});
 
