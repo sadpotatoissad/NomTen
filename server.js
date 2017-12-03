@@ -18,9 +18,8 @@ var allowCrossDomain = function(req, res, next) {
     res.header('Access-Control-Allow-Headers', 'Content-Type');
     next();
 }
-app.configure(function() {
-    app.use(allowCrossDomain);
-});
+
+app.use(allowCrossDomain);
 
 //remove ingredient from the db for given user
 app.get('/users/:userId/category/:categoryId/ingredient/:ingredientId', function (req, res) {
