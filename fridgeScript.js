@@ -309,6 +309,32 @@
         // get element that was clicked upon
         var element = document.getElementById(id);
         var item = element.parentNode;
+	var category = item.parentNode;
+	
+	switch(category) {
+	    case 'proteinList':
+        	category = 'proteinList';
+        	break;
+	    case 'carbList':
+	        category = 'carbList';
+	        break;
+	    case 'dairyList':
+	        category = 'dairyList';
+	        break;
+	    case 'vegList':
+	        category = 'vegList';
+	        break;
+	    case 'fruitList':
+	        category = 'fruitList';
+	        break;
+	    case 'miscList':
+	        category = 'miscList';
+	        break;
+	    default:
+	        category = 'ERROR';
+		break;
+	} 
+	
 
         // size of list is 1 before removing last item
         if (item_list.length == 1) {
@@ -323,12 +349,24 @@
         }
 
         // remove item from our global item list
-        var index = item_list.indexOf(item.childNodes[1].innerHTML);
+	var itemName = item.childNodes[1].innerHTML;
+        var index = item_list.indexOf(itemName);
         item_list.splice(index, 1);
 
 
         // remove item from our visual list
         item.parentNode.removeChild(item);
+	
+	// remove item from our database
+	var MongoClient = require('mongodb').MongoClient
+    MongoClient.connect("mongodb://csc309f:csc309fall@ds117316.mlab.com:17316/csc309db", function(err,res){
+	if(err) console.log(err)
+	console.log("Database created");
+	db = res
+						
+ 	db.collection('AWebsiteHasNoName').update({'user_id': "user_1"}, {$pull: {category: itemName}});
+	db.close();
+	});
 
         // for debugging 
         console.log(item_list);

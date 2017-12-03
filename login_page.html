@@ -88,18 +88,19 @@ span.psw {
     <label><b>Username</b></label>
     <input id="user" type="text" placeholder="Enter Username" required>
 
-    <button type="submit" onclick="login()">Login</button>
+    <button type="submit" onclick="window.location='http://www.tutorialspoint.com';">Login</button>
     <input type="checkbox" checked="checked"> Remember me
   </div>
 
 </form>
 
 </body>
-<script>
+<script type="text/javascript">
     function login(){
 
-        window.location.assign("index.html");
-        
+        window.location="index.html";
+        //username.setAttribute('href', 'index.html');
+	
         /*var username = document.getElementById("user");
         if(username.value==""){
             alert("Username cannot be empty!");
