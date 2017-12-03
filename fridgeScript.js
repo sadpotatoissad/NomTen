@@ -314,9 +314,10 @@
         // get element that was clicked upon
         var element = document.getElementById(id);
         var item = element.parentNode;
-    	var category = item.parentNode;
+    	var category = item.parentNode.id;
+        console.log("category removed is " + category);
     	
-    	switch(category) {
+    	/*switch(category) {
     	    case 'Protein':
             	category = 'proteinList';
             	break;
@@ -338,7 +339,7 @@
     	    default:
     	        category = 'ERROR';
     		break;
-    	} 
+    	} */
 	
 
         // size of list is 1 before removing last item

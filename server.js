@@ -105,6 +105,35 @@ app.post('/remove_ingredient',function(req,res){
   res.send("deleted");
 });
 
+app.post('/user_login', function(req, res) {
+	var user = req.body.user;
+
+	MongoClient.connect(url, function(err,res){
+			if(err) console.log(err)
+			console.log("Checking if user exists");
+			db = res
+			var exists = true;
+			
+			/*db.collection('AWebsiteHasNoName').find({user_id: user}).toArray(function(err,res) {
+				if (res.length == []) { //if user doesn't exist then make one
+					console.log("making new user");
+					exists = false;
+				} else {
+					console.log("user already exists");
+				}
+			});*/
+			console.log(exists);
+			if (db.collection('AWebsiteHasNoName').find({user_id: user}).toArray() == []) {
+				console.log("making new user");
+				db.collection('AWebsiteHasNoName').insertOne({user_id: user, proteinList : [], carbList : [], dairyList : [], vegList : [], fruitList : [], miscList : []});
+			} else {
+				console.log("user already exists");
+			}
+			db.close();
+		});
+
+});
+
 app.listen(3000, function(){
 	console.log("Server listening on PORT 3000")
 });

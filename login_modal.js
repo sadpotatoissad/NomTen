@@ -14,6 +14,12 @@
 
                 document.getElementById("UserNameDisplay").textContent = " Logout User: " + input;
                 userID = input;
+
+                $.post('http://localhost:3000/user_login', 
+                    {"user":userID}, 
+                    function(data, status){
+                        console.log("Data from server after add user: " + data + "\nStatus: " + status);
+                });
             } else {
 
                 alert("Username is invalid!");
