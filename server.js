@@ -10,6 +10,18 @@ const app = express();
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
+// to get over chrome's security
+// https://stackoverflow.com/questions/18642828/origin-http-localhost3000-is-not-allowed-by-access-control-allow-origin
+var allowCrossDomain = function(req, res, next) {
+    res.header('Access-Control-Allow-Origin', "http://localhost:3000");
+    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+    res.header('Access-Control-Allow-Headers', 'Content-Type');
+    next();
+}
+app.configure(function() {
+    app.use(allowCrossDomain);
+});
+
 //remove ingredient from the db for given user
 app.get('/users/:userId/category/:categoryId/ingredient/:ingredientId', function (req, res) {
     // Access userId via: req.params.userId
