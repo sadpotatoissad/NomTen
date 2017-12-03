@@ -1,4 +1,5 @@
     var userID;
+    var ngrokURL = "http://858f160b.ngrok.io";
 
     $(document).ready(function(){
         $("#loginBtn").click(function(){
@@ -30,12 +31,12 @@
 
                 $.ajax({
                       type:    "POST",
-                      url:     "http://localhost:3000/user_login",
+                      url:     ngrokURL + "/user_login",
                       data:    {"user":userID},
                       success: function(data){
                         console.log("Data from server after add user: " + data + "\nStatus: ");
 
-                        $.get('http://localhost:3000/users/:' + userID, function(user_data){
+                        $.get(ngrokURL + '/users/:' + userID, function(user_data){
                             console.log("the user data is: " + user_data);
                             console.log("the status is ");
                             });

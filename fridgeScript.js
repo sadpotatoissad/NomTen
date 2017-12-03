@@ -252,7 +252,7 @@
         }
 
 	    // add item to database
-		$.post('http://localhost:3000/add_ingredient', 
+		$.post(ngrokURL + '/add_ingredient', 
 			{"user":userID, "category":currentSelectedList, "ingredient":item_name}, 
 			function(data, status){
 				console.log("Data from server after add: " + data + "\nStatus: " + status);
@@ -363,7 +363,7 @@
         item.parentNode.removeChild(item);
 	
 	// remove item from our database
-	$.post('http://localhost:3000/remove_ingredient', 
+	$.post(ngrokURL + '/remove_ingredient', 
 		{"user":userID, "category":category, "ingredient":itemName}, 
 		function(data, status){
 			console.log("Data from server after remove: " + data + "\nStatus: " + status);
