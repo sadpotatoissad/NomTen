@@ -1,5 +1,8 @@
 <!DOCTYPE html>
 <html>
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</head>
 <style>
 form {
     border: 3px solid #f1f1f1;
@@ -86,32 +89,24 @@ span.psw {
 
   <div class="container">
     <label><b>Username</b></label>
-    <input id="user" type="text" placeholder="Enter Username" required>
+    <input id="user" type="text" name="uname" placeholder="Enter Username" required>
 
-    <button type="submit" onclick="window.location='http://www.tutorialspoint.com';">Login</button>
+    <button type="submit" id="btn">Login</button>
     <input type="checkbox" checked="checked"> Remember me
   </div>
 
 </form>
 
 </body>
-<script type="text/javascript">
-    function login(){
 
-        window.location="index.html";
-        //username.setAttribute('href', 'index.html');
-	
-        /*var username = document.getElementById("user");
-        if(username.value==""){
-            alert("Username cannot be empty!");
-        } else {
-            //redirect to homme page
-            //var yourElement = document.getElementById('yourHref');
-            //username.setAttribute('href', 'index.html');
+<script>
 
-
-        }*/
-    }
+    $("btn").click(function(){
+        var input = document.getElementById("user").getAttribute("");
+        if(input != "") {
+            window.location.assign('index.html');
+        }
+    });
 
 </script>
 

@@ -1,3 +1,5 @@
+var MongoClient = require('mongodb').MongoClient
+var url = "mongodb://csc309f:csc309fall@ds117316.mlab.com:17316/csc309db";
 
     // class of number so it can be passed as a reference and not a copy
     class Integer{
@@ -38,7 +40,7 @@
     $(document).ready(function(){
 
         // dropdown events start------------------------------------------------------------------------------
-         $("#dropDownProtein").click(function(){            
+         $("#dropDownProtein").click(function(){
 
             //rgba(238,130,238, 0.65) original color
             // change selected catagory to selected color = red
@@ -56,7 +58,7 @@
             toggle = '#toggle1';
         });
 
-        $("#dropDownCarbs").click(function(){            
+        $("#dropDownCarbs").click(function(){
 
             //rgba(238,130,238, 0.65) original color
             // change selected catagory to selected color = red
@@ -75,7 +77,7 @@
         });
 
 
-        $("#dropDownDairy").click(function(){            
+        $("#dropDownDairy").click(function(){
 
             //rgba(238,130,238, 0.65) original color
             // change selected catagory to selected color = red
@@ -94,7 +96,7 @@
         });
 
 
-        $("#dropDownVeg").click(function(){            
+        $("#dropDownVeg").click(function(){
 
             //rgba(238,130,238, 0.65) original color
             // change selected catagory to selected color = red
@@ -115,7 +117,7 @@
 
 
 
-        $("#dropDownFruits").click(function(){            
+        $("#dropDownFruits").click(function(){
 
             //rgba(238,130,238, 0.65) original color
             // change selected catagory to selected color = red
@@ -135,7 +137,7 @@
 
 
 
-        $("#dropDownMisc").click(function(){            
+        $("#dropDownMisc").click(function(){
 
             //rgba(238,130,238, 0.65) original color
             // change selected catagory to selected color = red
@@ -154,14 +156,14 @@
         });
 
         // dropdown events end------------------------------------------------------------------------------
-        
 
-        $("#protein").click(function(){            
+
+        $("#protein").click(function(){
 
             if (openProtein.num == 0) {
-                $("#proteinList").slideDown("normal");  
+                $("#proteinList").slideDown("normal");
                 $("#toggle1").toggleClass("arrowDown");
-                openProtein.num = 1;            
+                openProtein.num = 1;
             } else {
                 $("#proteinList").slideUp("normal");
                 $("#toggle1").toggleClass("arrowDown");
@@ -171,9 +173,9 @@
         $("#carbs").click(function(){
 
             if (openCarbs.num == 0) {
-                $("#carbList").slideDown("normal");  
+                $("#carbList").slideDown("normal");
                 $("#toggle2").toggleClass("arrowDown");
-                openCarbs.num = 1;            
+                openCarbs.num = 1;
             } else {
                 $("#carbList").slideUp("normal");
                 $("#toggle2").toggleClass("arrowDown");
@@ -183,9 +185,9 @@
         $("#dairy").click(function(){
 
             if (openDairy.num == 0) {
-                $("#dairyList").slideDown("normal");  
+                $("#dairyList").slideDown("normal");
                 $("#toggle3").toggleClass("arrowDown");
-                openDairy.num = 1;            
+                openDairy.num = 1;
             } else {
                 $("#dairyList").slideUp("normal");
                 $("#toggle3").toggleClass("arrowDown");
@@ -194,9 +196,9 @@
         });
         $("#vegs").click(function(){
             if (openVegs.num == 0) {
-                $("#vegList").slideDown("normal");  
+                $("#vegList").slideDown("normal");
                 $("#toggle4").toggleClass("arrowDown");
-                openVegs.num = 1;            
+                openVegs.num = 1;
             } else {
                 $("#vegList").slideUp("normal");
                 $("#toggle4").toggleClass("arrowDown");
@@ -205,9 +207,9 @@
         });
         $("#fruits").click(function(){
             if (openFruits.num == 0) {
-                $("#fruitList").slideDown("normal");  
+                $("#fruitList").slideDown("normal");
                 $("#toggle5").toggleClass("arrowDown");
-                openFruits.num = 1;            
+                openFruits.num = 1;
             } else {
                 $("#fruitList").slideUp("normal");
                 $("#toggle5").toggleClass("arrowDown");
@@ -217,9 +219,9 @@
 
         $("#misc").click(function(){
             if (openMisc.num == 0) {
-                $("#miscList").slideDown("normal");  
+                $("#miscList").slideDown("normal");
                 $("#toggle6").toggleClass("arrowDown");
-                openMisc.num = 1;            
+                openMisc.num = 1;
             } else {
                 $("#miscList").slideUp("normal");
                 $("#toggle6").toggleClass("arrowDown");
@@ -252,12 +254,29 @@
             return;
         }
 
-        // <span id='close' onclick='this.parentNode.parentNode.parentNode.removeChild(this.parentNode.parentNode); return false;'>x </span>
+         //db stuff
 
-        item_list.push(item_name); 
+      MongoClient.connect(url, function(err,res){
+      if(err) console.log(err)
+          console.log("Database created");
+          res = db
+      var user_db_id = db.collection("AWebsiteHasNoName").find({user_id: cur_user_id})._id;
+      db.collection("AWebsiteHasNoName").update(
+        {user_id: cur_user_id},
+        {
+          $addToSet: {currentSelectedList:item_name}
+        },
+        { upsert: true }
+      );
+      //makes sure its added
+      console.log(db.collection("AWebsiteHasNoName").find({}));
+      db.close();
+      })
+        // <span id='close' onclick='this.parentNode.parentNode.parentNode.removeChild(this.parentNode.parentNode); return false;'>x </span>
+        item_list.push(item_name);
 
         var div = document.createElement('div');
-        var id_name = "item" + id_counter; 
+        var id_name = "item" + id_counter;
         div.setAttribute("class","fridgeItem");
         //p.setAttribute("onclick","removeItem(this)");
         //p.setAttribute("id","item" + id_counter);
@@ -270,7 +289,7 @@
         close_x.setAttribute("title","click to remove");
         close_x.setAttribute("onclick","removeItem(this)");
         close_x.textContent = "x";
-        
+
         div.appendChild(close_x);
 
         var name = document.createElement('span');
@@ -281,7 +300,7 @@
 
         //p.innerHTML = item_name;
         input.value = "";
-        
+
         document.getElementById(currentSelectedList).appendChild(div);
         document.getElementById(currentSelectedList).style.padding = "10px";
 
@@ -289,8 +308,8 @@
 
             $("#"+currentSelectedList).slideDown("normal");
             $(toggle).toggleClass("arrowDown");
-            
-            currentArrow.num = 1;          
+
+            currentArrow.num = 1;
         }
 
         console.log(item_list);
@@ -368,6 +387,6 @@
 	db.close();
 	});
 
-        // for debugging 
+        // for debugging
         console.log(item_list);
     }

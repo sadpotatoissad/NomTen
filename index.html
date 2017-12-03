@@ -6,14 +6,93 @@
   <link rel="stylesheet" href="styles.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script src="login_modal.js"></script>
   <script src="fridgeScript.js"></script>
   <script src="recipies.js"></script>
   <script src="filter.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
+<style>
+  #myCarousel {
+    visibility: hidden;
+  }
+  .modal_login {
+    display: block; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: none; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background: #000000 url(login_modal_bg.jpg);
+  }
+  .modal_login_content {
+    background-color: white;
+    margin: 15% auto; /* 15% from the top and centered */
+    padding: 30px;
+    border: 1px solid #888;
+    width: 40%; /* Could be more or less, depending on screen size */
+    box-shadow: 0 4px 8px 0 rgba(128, 0, 128, 0.4), 0 6px 20px 0 rgba(128, 0, 128, 0.3);
+    /*text-align: center;*/
+  }
+
+  .modal_login_form {
+    border: 3px solid #f1f1f1;
+    margin: 0 auto;
+  }
+
+  .login_modal_container {
+    max-width: 500px;
+    padding: 16px;
+    border: 3px solid #f1f1f1;
+    margin: 0 auto;
+  }
+
+
+  
+  #user[type=text] {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+  }
+
+  #loginBtn {
+    background-color: violet;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+  }
+
+  #loginBtn:hover{
+    background-color: green;
+  }
+
+</style>
+
 
 <body>
+
+  <div id="id01" class="modal_login">
+    <div class="modal_login_content">
+      <h2 style="text-align: center;">AWebSiteHasNoName - Login</h2>
+        <div class="login_modal_container">
+          <label><b>Username</b></label>
+          <input id="user" type="text" placeholder="Enter Username" required>
+          <button type="submit" id="loginBtn">Login</button>
+          <input type="checkbox" checked="checked"> Remember me
+        </div>
+    </div>
+  </div>
+
 
   <nav class="navbar navbar-inverse">
     <div class="container-fluid">
@@ -25,7 +104,7 @@
         </a></li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        <li><a href="#"><span class="glyphicon glyphicon-user"></span> UserTemp</a></li>
+        <li><a  href="#" onclick="logout()"><span class="glyphicon glyphicon-user"></span><span id="UserNameDisplay"></span></a></li>
       </ul>
     </div>
   </nav>
