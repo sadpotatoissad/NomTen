@@ -19,6 +19,13 @@
                     {"user":userID}, 
                     function(data, status){
                         console.log("Data from server after add user: " + data + "\nStatus: " + status);
+
+                });
+
+                $.get('http://localhost:3000/user/' + userID, function(data, status){
+                    console.log("the user data is: " + data);
+                    console.log("the status is " + status);
+
                 });
             } else {
 
