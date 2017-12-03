@@ -1,7 +1,4 @@
-var MongoClient = require('mongodb').MongoClient
-var url = "mongodb://csc309f:csc309fall@ds117316.mlab.com:17316/csc309db";
-
-    // class of number so it can be passed as a reference and not a copy
+ // class of number so it can be passed as a reference and not a copy
     class Integer{
         constructor(num){
             this.num = num;
@@ -254,24 +251,13 @@ var url = "mongodb://csc309f:csc309fall@ds117316.mlab.com:17316/csc309db";
             return;
         }
 
-         //db stuff
+	    // add item to database
+		$.post('localhost:3000/add_ingredient', 
+			{"user":userID, "category":currentSelectedList, "ingredient":item_name}, 
+			function(data, status){
+				console.log("Data from server after add: " + data + "\nStatus: " + status);
+		});
 
-      MongoClient.connect(url, function(err,res){
-      if(err) console.log(err)
-          console.log("Database created");
-          res = db
-      var user_db_id = db.collection("AWebsiteHasNoName").find({user_id: cur_user_id})._id;
-      db.collection("AWebsiteHasNoName").update(
-        {user_id: cur_user_id},
-        {
-          $addToSet: {currentSelectedList:item_name}
-        },
-        { upsert: true }
-      );
-      //makes sure its added
-      console.log(db.collection("AWebsiteHasNoName").find({}));
-      db.close();
-      })
         // <span id='close' onclick='this.parentNode.parentNode.parentNode.removeChild(this.parentNode.parentNode); return false;'>x </span>
         item_list.push(item_name);
 
@@ -372,19 +358,14 @@ var url = "mongodb://csc309f:csc309fall@ds117316.mlab.com:17316/csc309db";
         var index = item_list.indexOf(itemName);
         item_list.splice(index, 1);
 
-
         // remove item from our visual list
         item.parentNode.removeChild(item);
 	
 	// remove item from our database
-	var MongoClient = require('mongodb').MongoClient
-    MongoClient.connect("mongodb://csc309f:csc309fall@ds117316.mlab.com:17316/csc309db", function(err,res){
-	if(err) console.log(err)
-	console.log("Database created");
-	db = res
-						
- 	db.collection('AWebsiteHasNoName').update({'user_id': "user_1"}, {$pull: {category: itemName}});
-	db.close();
+	$.post('localhost:3000/remove_ingredient', 
+		{"user":userID, "category":category, "ingredient":itemName}, 
+		function(data, status){
+			console.log("Data from server after remove: " + data + "\nStatus: " + status);
 	});
 
         // for debugging

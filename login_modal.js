@@ -1,4 +1,3 @@
-
     var userID;
 
     $(document).ready(function(){
