@@ -47,6 +47,29 @@ app.get('/users/:userId/category/:categoryId/ingredient/:ingredientId', function
 
 });
 
+// retrieves the specific user's data
+app.get('/users/:userId', function(req, res) {
+
+	var user = req.params.userId;
+	MongoClient.connect(url, function(err, db) {
+		if(err) console.log(err);
+		console.log("Sending data for user: " + user);
+
+		var query = {userId: user};
+
+		db.collection('AWebsiteHasNoName').find(query).toArray(function(err, result) {
+			if (err) throw err;
+			console.log(result);
+
+			res.send(result);
+			db.close();
+		});
+
+	});
+	res.sendStatus(200);
+});
+
+
 //curl -H "Content-Type: application/json" -X POST -d '{"user":"user_1", "category":"proteinList", "ingredient":"chicken"}' localhost:3000/add_ingredient
 app.post('/add_ingredient',function(req,res){
 
@@ -108,19 +131,18 @@ app.post('/remove_ingredient',function(req,res){
 app.post('/user_login', function(req, res) {
 	var user = req.body.user;
 
-	MongoClient.connect(url, function(err,res){
+	MongoClient.connect(url, function(err, db){
 			if(err) console.log(err)
 			console.log("Checking if user exists");
-			db = res
 
 			db.collection('AWebsiteHasNoName').update(
 				{user_id: user}, 
 				{$setOnInsert: {user_id: user, proteinList : [], carbList : [], dairyList : [], vegList : [], fruitList : [], miscList : []}}, 
 				{upsert : true});
 
+				res.sendStatus(200);
 			db.close();
 		});
-
 });
 
 app.listen(3000, function(){
