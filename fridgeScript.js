@@ -314,31 +314,31 @@
         // get element that was clicked upon
         var element = document.getElementById(id);
         var item = element.parentNode;
-	var category = item.parentNode;
-	
-	switch(category) {
-	    case 'proteinList':
-        	category = 'proteinList';
-        	break;
-	    case 'carbList':
-	        category = 'carbList';
-	        break;
-	    case 'dairyList':
-	        category = 'dairyList';
-	        break;
-	    case 'vegList':
-	        category = 'vegList';
-	        break;
-	    case 'fruitList':
-	        category = 'fruitList';
-	        break;
-	    case 'miscList':
-	        category = 'miscList';
-	        break;
-	    default:
-	        category = 'ERROR';
-		break;
-	} 
+    	var category = item.parentNode;
+    	
+    	switch(category) {
+    	    case 'Protein':
+            	category = 'proteinList';
+            	break;
+    	    case 'Carbs':
+    	        category = 'carbList';
+    	        break;
+    	    case 'Dairy':
+    	        category = 'dairyList';
+    	        break;
+    	    case 'Vegetables':
+    	        category = 'vegList';
+    	        break;
+    	    case 'Fruits':
+    	        category = 'fruitList';
+    	        break;
+    	    case 'Misc':
+    	        category = 'miscList';
+    	        break;
+    	    default:
+    	        category = 'ERROR';
+    		break;
+    	} 
 	
 
         // size of list is 1 before removing last item

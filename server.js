@@ -82,6 +82,9 @@ app.post('/remove_ingredient',function(req,res){
   	var user = req.body.user;
   	var category = req.body.category;
   	var ingredient = req.body.ingredient;
+  	console.log(user);
+  	console.log(category);
+  	console.log(ingredient);
 
   	//should make pull = {category: { $in: [ingredient]}}
   	var pull = {};
