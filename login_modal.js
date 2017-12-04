@@ -1,8 +1,8 @@
     var userID;
     var ngrokURL = "http://aa1fd8c8.ngrok.io";
     document.ready
-      $(document).ready(function(){
-    if(document.cookie != ''){
+    $(document).ready(function(){
+      if(document.cookie != ''){
       //has logged in
       var modal_view = document.getElementById("id01");
       //var corousel_view = document.getElementsByClassName("myCarousel");
@@ -11,10 +11,8 @@
       userID = document.cookie.split('=')[1];
       document.getElementById("UserNameDisplay").textContent = " Logout User: " + userID;
 
-
-
-    }else{
-  //  $(document).ready(function(){
+    } else {
+        //$(document).ready(function(){
         $("#loginBtn").click(function(){
             var input = document.getElementById("user").value;
 
