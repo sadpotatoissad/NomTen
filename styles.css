@@ -293,6 +293,11 @@ hr {
   border-radius: 25px;
   text-overflow: ellipsis;
   overflow: hidden;
+
+}
+
+.theNameOfItem {
+  cursor: pointer;
 }
 
 .closeX{

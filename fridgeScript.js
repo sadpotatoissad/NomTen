@@ -36,6 +36,13 @@
     // functions of the fridge catagories lists and dropdown
     $(document).ready(function(){
 
+
+        // When the user clicks on <span> (x), close the modal
+        $("#close_modal_renamer").click(function(){
+            var modal_renamer = document.getElementById('renamerModal');
+            modal_renamer.setAttribute("style", "visibility: hidden");
+        });
+
         // dropdown events start------------------------------------------------------------------------------
          $("#dropDownProtein").click(function(){
 
@@ -245,7 +252,7 @@
             return;
         }
 
-        //check is input is already in our list
+        //check if input is already in our list
         if(item_list.indexOf(item_name) != -1){
             alert("Item is already in fridge");
             return;
@@ -262,8 +269,12 @@
         item_list.push(item_name);
 
         var div = document.createElement('div');
-        var id_name = "item" + id_counter;
+        //var id_name = "divItem" + id_counter;
+
+        //div.setAttribute("id", id_name);
+
         div.setAttribute("class","fridgeItem");
+
         //p.setAttribute("onclick","removeItem(this)");
         //p.setAttribute("id","item" + id_counter);
         id_counter++;
@@ -279,7 +290,16 @@
         div.appendChild(close_x);
 
         var name = document.createElement('span');
+        var name_id = "ItemId" + id_counter;
+
+        name.setAttribute("id", name_id);
+
         name.setAttribute("class","theNameOfItem");
+
+
+        name.setAttribute("onclick", "renameItem(this)");
+
+
         name.textContent = item_name;
 
         div.appendChild(name);
@@ -306,6 +326,65 @@
       return !str.replace(/^\s+/g, '').length; // boolean (`true` if field is empty)
     }
 
+    var renamerTitleString = "Rename - ";
+    var element_to_rename;
+    var new_name;
+    var modal_renamer = document.getElementById('renamerModal');
+        
+
+    // opens up a dialog to rename selected item and renames it
+    function renameItem(e) {
+
+        var id = $(e).attr("id");
+        element_to_rename = document.getElementById(id);
+        //item_to_rename = element.childNodes[1]; 
+        var item_name = element_to_rename.innerHTML;
+        console.log("item to rename is " + item_name);
+
+        // Open the modal 
+        document.getElementById('renamerModal').setAttribute("style", "display: block");
+
+        // rename title in modal
+        var renamer_title = document.getElementById('renamerTitle');
+        renamer_title.textContent = renamerTitleString + '"' + item_name + '"';
+
+    }
+
+    function renamer(){
+        var new_name_input = document.getElementById('renamer_new_name');
+        new_name = new_name_input.value;
+        console.log(new_name);
+
+        //check if input is already in our list
+        if(item_list.indexOf(new_name) != -1){
+            alert("Item with name "+ new_name +" already exists in fridge");
+            return;
+        }
+
+        if (isEmpty(new_name)){
+            console.log("the empty name is " + '"' + new_name + '"');
+            alert("new name cannot be empty");
+            // clear input bar
+            new_name_input.value = "";
+            return;
+        } else {
+            
+            var old_name = element_to_rename.innerHTML;
+            element_to_rename.textContent = new_name;
+
+            // update the list with the new name
+            var index = item_list.indexOf(old_name);
+            item_list[index] = new_name;
+
+            console.log("old name "+ old_name +" new name " + new_name);
+            console.log(item_list);
+            // hide renamer modal
+            document.getElementById('renamerModal').setAttribute("style", "visibility: hidden");
+
+            // clear input bar
+            new_name_input.value = "";
+        }
+    }
 
     // remove item from our ingredients list
     function removeItem(e){
