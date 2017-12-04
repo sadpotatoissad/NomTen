@@ -1,4 +1,6 @@
- // class of number so it can be passed as a reference and not a copy
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+
+    // class of number so it can be passed as a reference and not a copy
     class Integer{
         constructor(num){
             this.num = num;
@@ -36,15 +38,8 @@
     // functions of the fridge catagories lists and dropdown
     $(document).ready(function(){
 
-
-        // When the user clicks on <span> (x), close the modal
-        $("#close_modal_renamer").click(function(){
-            var modal_renamer = document.getElementById('renamerModal');
-            modal_renamer.setAttribute("style", "visibility: hidden");
-        });
-
         // dropdown events start------------------------------------------------------------------------------
-         $("#dropDownProtein").click(function(){
+         $("#dropDownProtein").click(function(){            
 
             //rgba(238,130,238, 0.65) original color
             // change selected catagory to selected color = red
@@ -62,7 +57,7 @@
             toggle = '#toggle1';
         });
 
-        $("#dropDownCarbs").click(function(){
+        $("#dropDownCarbs").click(function(){            
 
             //rgba(238,130,238, 0.65) original color
             // change selected catagory to selected color = red
@@ -81,7 +76,7 @@
         });
 
 
-        $("#dropDownDairy").click(function(){
+        $("#dropDownDairy").click(function(){            
 
             //rgba(238,130,238, 0.65) original color
             // change selected catagory to selected color = red
@@ -100,7 +95,7 @@
         });
 
 
-        $("#dropDownVeg").click(function(){
+        $("#dropDownVeg").click(function(){            
 
             //rgba(238,130,238, 0.65) original color
             // change selected catagory to selected color = red
@@ -121,7 +116,7 @@
 
 
 
-        $("#dropDownFruits").click(function(){
+        $("#dropDownFruits").click(function(){            
 
             //rgba(238,130,238, 0.65) original color
             // change selected catagory to selected color = red
@@ -141,7 +136,7 @@
 
 
 
-        $("#dropDownMisc").click(function(){
+        $("#dropDownMisc").click(function(){            
 
             //rgba(238,130,238, 0.65) original color
             // change selected catagory to selected color = red
@@ -160,14 +155,14 @@
         });
 
         // dropdown events end------------------------------------------------------------------------------
+        
 
-
-        $("#protein").click(function(){
+        $("#protein").click(function(){            
 
             if (openProtein.num == 0) {
-                $("#proteinList").slideDown("normal");
+                $("#proteinList").slideDown("normal");  
                 $("#toggle1").toggleClass("arrowDown");
-                openProtein.num = 1;
+                openProtein.num = 1;            
             } else {
                 $("#proteinList").slideUp("normal");
                 $("#toggle1").toggleClass("arrowDown");
@@ -177,9 +172,9 @@
         $("#carbs").click(function(){
 
             if (openCarbs.num == 0) {
-                $("#carbList").slideDown("normal");
+                $("#carbList").slideDown("normal");  
                 $("#toggle2").toggleClass("arrowDown");
-                openCarbs.num = 1;
+                openCarbs.num = 1;            
             } else {
                 $("#carbList").slideUp("normal");
                 $("#toggle2").toggleClass("arrowDown");
@@ -189,9 +184,9 @@
         $("#dairy").click(function(){
 
             if (openDairy.num == 0) {
-                $("#dairyList").slideDown("normal");
+                $("#dairyList").slideDown("normal");  
                 $("#toggle3").toggleClass("arrowDown");
-                openDairy.num = 1;
+                openDairy.num = 1;            
             } else {
                 $("#dairyList").slideUp("normal");
                 $("#toggle3").toggleClass("arrowDown");
@@ -200,9 +195,9 @@
         });
         $("#vegs").click(function(){
             if (openVegs.num == 0) {
-                $("#vegList").slideDown("normal");
+                $("#vegList").slideDown("normal");  
                 $("#toggle4").toggleClass("arrowDown");
-                openVegs.num = 1;
+                openVegs.num = 1;            
             } else {
                 $("#vegList").slideUp("normal");
                 $("#toggle4").toggleClass("arrowDown");
@@ -211,9 +206,9 @@
         });
         $("#fruits").click(function(){
             if (openFruits.num == 0) {
-                $("#fruitList").slideDown("normal");
+                $("#fruitList").slideDown("normal");  
                 $("#toggle5").toggleClass("arrowDown");
-                openFruits.num = 1;
+                openFruits.num = 1;            
             } else {
                 $("#fruitList").slideUp("normal");
                 $("#toggle5").toggleClass("arrowDown");
@@ -223,9 +218,9 @@
 
         $("#misc").click(function(){
             if (openMisc.num == 0) {
-                $("#miscList").slideDown("normal");
+                $("#miscList").slideDown("normal");  
                 $("#toggle6").toggleClass("arrowDown");
-                openMisc.num = 1;
+                openMisc.num = 1;            
             } else {
                 $("#miscList").slideUp("normal");
                 $("#toggle6").toggleClass("arrowDown");
@@ -252,29 +247,19 @@
             return;
         }
 
-        //check if input is already in our list
+        //check is input is already in our list
         if(item_list.indexOf(item_name) != -1){
             alert("Item is already in fridge");
             return;
         }
 
-	    // add item to database
-		$.post(ngrokURL + '/add_ingredient', 
-			{"user":userID, "category":currentSelectedList, "ingredient":item_name}, 
-			function(data, status){
-				console.log("Data from server after add: " + data + "\nStatus: " + status);
-		});
-
         // <span id='close' onclick='this.parentNode.parentNode.parentNode.removeChild(this.parentNode.parentNode); return false;'>x </span>
-        item_list.push(item_name);
+
+        item_list.push(item_name); 
 
         var div = document.createElement('div');
-        //var id_name = "divItem" + id_counter;
-
-        //div.setAttribute("id", id_name);
-
+        var id_name = "item" + id_counter; 
         div.setAttribute("class","fridgeItem");
-
         //p.setAttribute("onclick","removeItem(this)");
         //p.setAttribute("id","item" + id_counter);
         id_counter++;
@@ -286,27 +271,18 @@
         close_x.setAttribute("title","click to remove");
         close_x.setAttribute("onclick","removeItem(this)");
         close_x.textContent = "x";
-
+        
         div.appendChild(close_x);
 
         var name = document.createElement('span');
-        var name_id = "ItemId" + id_counter;
-
-        name.setAttribute("id", name_id);
-
         name.setAttribute("class","theNameOfItem");
-
-
-        name.setAttribute("onclick", "renameItem(this)");
-
-
         name.textContent = item_name;
 
         div.appendChild(name);
 
         //p.innerHTML = item_name;
         input.value = "";
-
+        
         document.getElementById(currentSelectedList).appendChild(div);
         document.getElementById(currentSelectedList).style.padding = "10px";
 
@@ -314,8 +290,8 @@
 
             $("#"+currentSelectedList).slideDown("normal");
             $(toggle).toggleClass("arrowDown");
-
-            currentArrow.num = 1;
+            
+            currentArrow.num = 1;          
         }
 
         console.log(item_list);
@@ -326,65 +302,6 @@
       return !str.replace(/^\s+/g, '').length; // boolean (`true` if field is empty)
     }
 
-    var renamerTitleString = "Rename - ";
-    var element_to_rename;
-    var new_name;
-    var modal_renamer = document.getElementById('renamerModal');
-        
-
-    // opens up a dialog to rename selected item and renames it
-    function renameItem(e) {
-
-        var id = $(e).attr("id");
-        element_to_rename = document.getElementById(id);
-        //item_to_rename = element.childNodes[1]; 
-        var item_name = element_to_rename.innerHTML;
-        console.log("item to rename is " + item_name);
-
-        // Open the modal 
-        document.getElementById('renamerModal').setAttribute("style", "display: block");
-
-        // rename title in modal
-        var renamer_title = document.getElementById('renamerTitle');
-        renamer_title.textContent = renamerTitleString + '"' + item_name + '"';
-
-    }
-
-    function renamer(){
-        var new_name_input = document.getElementById('renamer_new_name');
-        new_name = new_name_input.value;
-        console.log(new_name);
-
-        //check if input is already in our list
-        if(item_list.indexOf(new_name) != -1){
-            alert("Item with name "+ new_name +" already exists in fridge");
-            return;
-        }
-
-        if (isEmpty(new_name)){
-            console.log("the empty name is " + '"' + new_name + '"');
-            alert("new name cannot be empty");
-            // clear input bar
-            new_name_input.value = "";
-            return;
-        } else {
-            
-            var old_name = element_to_rename.innerHTML;
-            element_to_rename.textContent = new_name;
-
-            // update the list with the new name
-            var index = item_list.indexOf(old_name);
-            item_list[index] = new_name;
-
-            console.log("old name "+ old_name +" new name " + new_name);
-            console.log(item_list);
-            // hide renamer modal
-            document.getElementById('renamerModal').setAttribute("style", "visibility: hidden");
-
-            // clear input bar
-            new_name_input.value = "";
-        }
-    }
 
     // remove item from our ingredients list
     function removeItem(e){
@@ -393,33 +310,6 @@
         // get element that was clicked upon
         var element = document.getElementById(id);
         var item = element.parentNode;
-    	var category = item.parentNode.id;
-        console.log("category removed is " + category);
-    	
-    	/*switch(category) {
-    	    case 'Protein':
-            	category = 'proteinList';
-            	break;
-    	    case 'Carbs':
-    	        category = 'carbList';
-    	        break;
-    	    case 'Dairy':
-    	        category = 'dairyList';
-    	        break;
-    	    case 'Vegetables':
-    	        category = 'vegList';
-    	        break;
-    	    case 'Fruits':
-    	        category = 'fruitList';
-    	        break;
-    	    case 'Misc':
-    	        category = 'miscList';
-    	        break;
-    	    default:
-    	        category = 'ERROR';
-    		break;
-    	} */
-	
 
         // size of list is 1 before removing last item
         if (item_list.length == 1) {
@@ -434,31 +324,15 @@
         }
 
         // remove item from our global item list
-	var itemName = item.childNodes[1].innerHTML;
-        var index = item_list.indexOf(itemName);
+        var index = item_list.indexOf(item.childNodes[1].innerHTML);
         item_list.splice(index, 1);
+
 
         // remove item from our visual list
         item.parentNode.removeChild(item);
-	
-	// remove item from our database
-	/*$.post(ngrokURL + '/remove_ingredient', 
-		{"user":userID, "category":category, "ingredient":itemName}, 
-		function(data, status){
-			console.log("Data from server after remove: " + data + "\nStatus: " + status);
-	});*/
-    $.ajax({
-        url: ngrokURL + '/users/' + userID + '/category/' + category + '/ingredient/' + itemName,
-        type: 'DELETE',
-        success: function(result) {
-            console.log("successfully deleted with repsonse: " + result);
-        },
-        error: function() {
-            console.log("error on delete");
-        }
-    });
 
-
-        // for debugging
+        // for debugging 
         console.log(item_list);
     }
+
+},{}]},{},[1]);
