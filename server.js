@@ -21,6 +21,9 @@ var socketApp = require('express')();
 var server = require('http').Server(socketApp);
 var io = require('socket.io')(server);
 
+socketApp.use(bodyParser.urlencoded({extended: false}));
+socketApp.use(bodyParser.json());
+
 server.listen(80, function(){
 	console.log("Socket server listening on PORT 80")
 });
@@ -251,6 +254,7 @@ socketApp.get('/api/messages', function(req, res){
 
 // curl -H "Content-Type: application/json" -X POST -d '{"id": "1", "message":"test"}' http://121de550.ngrok.io/api/messages
 socketApp.post('/api/messages', function(req, res){
+	console.log(req.body);
 	var id = req.body.id;
 	var message = req.body.message;
 
@@ -261,7 +265,7 @@ socketApp.post('/api/messages', function(req, res){
 			{id: id, message: message}
 			);
 		console.log("emitting");
-		socket.emit('message', {id: id, message: message});
+		io.sockets.emit('message', {id: id, message: message});
 
 		res.sendStatus(200);
 		db.close();
