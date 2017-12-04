@@ -275,14 +275,13 @@ socketApp.post('/api/messages', function(req, res){
 socketApp.delete('/api/messages/:messageId', function (req, res){
 	var messageId = req.params.messageId;
 
-	MongoClient.connect(url, function(err,res){
+	MongoClient.connect(url, function(err,result){
 			if(err) console.log(err)
 			console.log("Removing message");
-			db = res
+			db = result
 
-			db.collection('AWebsiteHasNoNameMessages').update(
-				{},
-				{$unset: {id: messageId}}
+			db.collection('AWebsiteHasNoNameMessages').remove(
+				{id: messageId}
 				);
 			res.sendStatus(200);
 			db.close();
