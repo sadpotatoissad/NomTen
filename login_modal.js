@@ -36,10 +36,10 @@
                       success: function(data){
                         console.log("Data from server after add user: " + data + "\nStatus: ");
 
-                        $.get(ngrokURL + '/users/:' + userID, function(user_data){
+                       /* $.get(ngrokURL + '/users/:' + userID, function(user_data){
                             console.log("the user data is: " + user_data);
                             console.log("the status is ");
-                            });
+                            });*/
 
                         },
                       // vvv---- This is the new bit

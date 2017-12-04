@@ -10,6 +10,14 @@ const app = express();
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
+// to send html over network
+// https://stackoverflow.com/questions/31504798/using-express-js-to-serve-html-file-along-with-scripts-css-and-images
+app.use( express.static( __dirname ));
+
+app.get('/', function(req, res) {
+    res.sendFile(path.join( __dirname, 'index.html'));
+  });
+
 // to get over chrome's security
 // https://stackoverflow.com/questions/18642828/origin-http-localhost3000-is-not-allowed-by-access-control-allow-origin
 var allowCrossDomain = function(req, res, next) {
