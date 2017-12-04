@@ -363,11 +363,22 @@
         item.parentNode.removeChild(item);
 	
 	// remove item from our database
-	$.post(ngrokURL + '/remove_ingredient', 
+	/*$.post(ngrokURL + '/remove_ingredient', 
 		{"user":userID, "category":category, "ingredient":itemName}, 
 		function(data, status){
 			console.log("Data from server after remove: " + data + "\nStatus: " + status);
-	});
+	});*/
+    $.ajax({
+        url: ngrokURL + '/users/' + userID + '/category/' + category + '/ingredient/' + itemName,
+        type: 'DELETE',
+        success: function(result) {
+            console.log("successfully deleted with repsonse: " + result);
+        },
+        error: function() {
+            console.log("error on delete");
+        }
+    });
+
 
         // for debugging
         console.log(item_list);

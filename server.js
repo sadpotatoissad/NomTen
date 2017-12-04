@@ -18,6 +18,8 @@ app.get('/', function(req, res) {
     res.sendFile(path.join( __dirname, 'index.html'));
   });
 
+/*
+//
 // to get over chrome's security
 // https://stackoverflow.com/questions/18642828/origin-http-localhost3000-is-not-allowed-by-access-control-allow-origin
 var allowCrossDomain = function(req, res, next) {
@@ -27,10 +29,10 @@ var allowCrossDomain = function(req, res, next) {
     next();
 }
 
-app.use(allowCrossDomain);
+app.use(allowCrossDomain);*/
 
 //remove ingredient from the db for given user
-app.get('/users/:userId/category/:categoryId/ingredient/:ingredientId', function (req, res) {
+app.delete('/users/:userId/category/:categoryId/ingredient/:ingredientId', function (req, res) {
     // Access userId via: req.params.userId
     // Access categoryId via: req.params.categoryId
     // Access ingredientId via: req.params.ingredientId
@@ -151,6 +153,44 @@ app.post('/user_login', function(req, res) {
 				res.sendStatus(200);
 			db.close();
 		});
+});
+
+app.update('/users/:userId/category/:categoryId/old_ingredient/:oldIngredientId/new_ingredient/:newIngredientId', function(req, res) {
+	var user = req.params.userId;
+	var category = req.params.categoryId;
+	var oldIngredient = req.params.oldIngredientId;
+	var newIngredient = req.params.newIngredientId;
+	var match = {user_id: user};
+	match[category] = oldIngredient;
+
+
+	MongoClient.connect(url, function(err, db){
+			if(err) console.log(err)
+			console.log("Updating ingredient");
+
+			var pull = {};
+			pull[category] = {};
+			pull[category]['$in'] = [oldIngredient];
+			//should make pull = {category: { $in: [req.params.ingredientId]}}
+			db.collection('AWebsiteHasNoName').update(
+				{user_id: user}, 
+				{$pull: pull}
+				);
+
+		  	var addToSet = {};
+			addToSet[category] = ingredient;
+			console.log(addToSet);
+		  	//should make addToSet = {category: [ingredient]}
+			db.collection('AWebsiteHasNoName').update(
+				{user_id: user}, 
+				{$addToSet: addToSet}
+				);
+
+			res.sendStatus(200);
+			db.close();
+		});
+
+
 });
 
 app.listen(3000, function(){
