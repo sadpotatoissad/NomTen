@@ -2,14 +2,41 @@
     var ngrokURL = "http://30eed78b.ngrok.io";
     document.ready
     $(document).ready(function(){
+      
       if(document.cookie != ''){
-      //has logged in
-      var modal_view = document.getElementById("id01");
-      //var corousel_view = document.getElementsByClassName("myCarousel");
-      myCarousel.setAttribute("style", "visibility: visible");
-      modal_view.setAttribute("style", "visibility: hidden");
-      userID = document.cookie.split('=')[1];
-      document.getElementById("UserNameDisplay").textContent = " Logout User: " + userID;
+          //has logged in
+          var modal_view = document.getElementById("id01");
+          //var corousel_view = document.getElementsByClassName("myCarousel");
+          myCarousel.setAttribute("style", "visibility: visible");
+          modal_view.setAttribute("style", "visibility: hidden");
+          userID = document.cookie.split('=')[1];
+          document.getElementById("UserNameDisplay").textContent = " Logout User: " + userID;
+
+            $.get(ngrokURL + '/users/' + userID, function(user_data){
+                console.log("the user data is: " + user_data);
+                
+                var u_id = user_data[0]. user_id;
+                var u_proteinList = user_data[0].proteinList;
+                var u_carbList = user_data[0].carbList;
+                var u_dairyList = user_data[0].dairyList;
+                var u_vegList = user_data[0].vegList;
+                var u_fruitList = user_data[0].fruitList;
+                var u_miscList = user_data[0].miscList;
+
+                reloadFridge('proteinList', u_proteinList);
+
+                reloadFridge('carbList', u_carbList);
+
+                reloadFridge('dairyList', u_dairyList);
+
+                reloadFridge('vegList', u_vegList);
+
+                reloadFridge('fruitList', u_fruitList);
+
+                reloadFridge('miscList', u_miscList);
+
+                });
+
 
     } else {
         //$(document).ready(function(){
@@ -25,22 +52,8 @@
                 document.getElementById("UserNameDisplay").textContent = " Logout User: " + input;
                 userID = input;
 
-                /*
-                $.post('http://localhost:3000/user_login',
-                    {"user":userID},
-                    function(data){
-                        console.log("Data from server after add user: " + data + "\nStatus: ");
 
-                        $.get('http://localhost:3000/users/:' + userID, function(user_data){
-                            console.log("the user data is: " + user_data);
-                            console.log("the status is ");
-
-                        });
-
-                });
-                */
-
-                $.ajax({
+              $.ajax({
                       type:    "POST",
                       url:     ngrokURL + "/user_login",
                       data:    {"user":userID},
@@ -70,15 +83,12 @@
 
                             reloadFridge('miscList', u_miscList);
 
-                            //console.log("user: " + u_id);
-                            //console.log("protien List:" + u_proteinList[0]);
-
                             });
 
                         },
                       // vvv---- This is the new bit
                       error:   function() {
-                            alert("Error: POST request didn't work");
+                            alert("Error: PUT request didn't work");
                       }
                 });
 
