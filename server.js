@@ -252,7 +252,7 @@ app.post('/api/messages', function(req, res){
 			{id: id, message: message}
 			);
 
-		io.socket.emit({id: id, message: message});
+		io.socket.emit('message', {id: id, message: message});
 
 		res.sendStatus(200);
 		db.close();

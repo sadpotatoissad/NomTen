@@ -272,6 +272,10 @@
 
         div.setAttribute("class","fridgeItem");
 
+
+        div.setAttribute("title","click to rename");
+
+
         id_counter++;
 
         // x button to remove item
