@@ -16,6 +16,14 @@ const app = express();
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
+//socket stuff
+var server = require('http').Server(app);
+var io = require('socket.io')(server);
+
+server.listen(80, function(){
+	console.log("Socket server listening on PORT 80")
+});
+
 // to send html over network
 // https://stackoverflow.com/questions/31504798/using-express-js-to-serve-html-file-along-with-scripts-css-and-images
 app.use( express.static( __dirname ));
@@ -220,10 +228,54 @@ app.put('/renameItem/users/:userId/category/:categoryId/oldIngredient/:oldIngred
 			res.sendStatus(200);
 			db.close();
 		});
+});
 
+app.get('/api/messages', function(req, res){
+	var id = req.body.id;
+	var message = req.body.message;
 
+	MongoClient.connect(url, function(err, db){
+		if(err) console.log(err)
+		db.collection('AWebsiteHasNoName').find().toArray(function(err,result){res.send(result);});
+		db.close();
+	});
+});
+
+app.post('/api/messages', function(req, res){
+	var id = req.body.id;
+	var message = req.body.message;
+
+	MongoClient.connect(url, function(err, db){
+		if(err) console.log(err)
+
+		db.collection('AWebsiteHasNoNameMessages').insertOne(
+			{id: id, message: message}
+			);
+
+		io.socket.emit({id: id, message: message});
+
+		res.sendStatus(200);
+		db.close();
+	});
+});
+
+app.delete('/api/messages/:messageId', function (req, res){
+	var messageId = req.params.messageId;
+
+	MongoClient.connect(url, function(err,res){
+			if(err) console.log(err)
+			console.log("Removing message");
+			db = res
+
+			db.collection('AWebsiteHasNoName').update(
+				{},
+				{$unset: {id: messageId}}
+				);
+			res.sendStatus(200);
+			db.close();
+		});
 });
 
 app.listen(3000, function(){
-	console.log("Server listening on PORT 3000")
+	console.log("Express server listening on PORT 3000")
 });
