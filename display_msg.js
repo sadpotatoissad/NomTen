@@ -2,12 +2,14 @@
 //display_msg(msg){
 document.ready
 $(document).ready(function(){
-var msg = {id : 1, message: "message number 1"};//hard coded placeholder for testing
-var jumbotron = document.getElementById("jumbo");
-console.log(jumbotron);
-var x = document.createElement("P");
-x.innerHTML = msg.message;
-jumbotron.appendChild(x);
+	var socket = io.connect("http://93e4fa0c.ngrok.io");
+	socket.on('message', function (data) {
+		var jumbotron = document.getElementById("jumbo");
+		console.log(jumbotron);
+		var x = document.createElement("P");
+		x.innerHTML = data.message;
+		jumbotron.appendChild(x);
+	});
 });
 //}
 //to remove call this functions
