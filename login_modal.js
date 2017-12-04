@@ -155,3 +155,5 @@
         document.cookie = "login_cookie=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"; //sets cookie as past date to remove
         location.reload();
     }
+
+    

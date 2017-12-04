@@ -269,14 +269,9 @@
         item_list.push(item_name);
 
         var div = document.createElement('div');
-        //var id_name = "divItem" + id_counter;
-
-        //div.setAttribute("id", id_name);
 
         div.setAttribute("class","fridgeItem");
 
-        //p.setAttribute("onclick","removeItem(this)");
-        //p.setAttribute("id","item" + id_counter);
         id_counter++;
 
         // x button to remove item
@@ -296,6 +291,7 @@
 
         name.setAttribute("class","theNameOfItem");
 
+        name.setAttribute("title","click to rename");
 
         name.setAttribute("onclick", "renameItem(this)");
 
@@ -304,7 +300,6 @@
 
         div.appendChild(name);
 
-        //p.innerHTML = item_name;
         input.value = "";
 
         document.getElementById(currentSelectedList).appendChild(div);
@@ -390,16 +385,6 @@
             // clear input bar
             new_name_input.value = "";
 
-
-           //put('renameItem/users/:userId/category/:categoryId/old_ingredient/:oldIngredientId/new_ingredient/:newIngredientId'
-
-            /*
-           $.put(ngrokURL + "/renameItem/" + userID + "catagoryId/" + 
-                catagoryID + "oldIngredientId/" + old_name + "newIngredientId/" + new_name, 
-                function(data){
-                    console.log("Data from server after add user: " + data);
-           });
-            */
 
             // rename item in database
             $.ajax({
