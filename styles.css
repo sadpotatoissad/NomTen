@@ -293,11 +293,14 @@ hr {
   border-radius: 25px;
   text-overflow: ellipsis;
   overflow: hidden;
-
 }
 
 .theNameOfItem {
   cursor: pointer;
+}
+
+.theNameOfItem:hover {
+  color: yellow;
 }
 
 .closeX{

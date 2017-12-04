@@ -269,14 +269,9 @@
         item_list.push(item_name);
 
         var div = document.createElement('div');
-        //var id_name = "divItem" + id_counter;
-
-        //div.setAttribute("id", id_name);
 
         div.setAttribute("class","fridgeItem");
 
-        //p.setAttribute("onclick","removeItem(this)");
-        //p.setAttribute("id","item" + id_counter);
         id_counter++;
 
         // x button to remove item
@@ -296,6 +291,7 @@
 
         name.setAttribute("class","theNameOfItem");
 
+        name.setAttribute("title","click to rename");
 
         name.setAttribute("onclick", "renameItem(this)");
 
@@ -304,7 +300,6 @@
 
         div.appendChild(name);
 
-        //p.innerHTML = item_name;
         input.value = "";
 
         document.getElementById(currentSelectedList).appendChild(div);
@@ -328,7 +323,9 @@
 
     var renamerTitleString = "Rename - ";
     var element_to_rename;
+    var old_name;
     var new_name;
+    var catagoryID;
     var modal_renamer = document.getElementById('renamerModal');
 
 
@@ -369,8 +366,12 @@
             return;
         } else {
 
-            var old_name = element_to_rename.innerHTML;
+            old_name = element_to_rename.innerHTML;
             element_to_rename.textContent = new_name;
+
+            catagoryID = element_to_rename.parentNode.parentNode.id;
+
+            console.log("catagory of renamed item is " + catagoryID)
 
             // update the list with the new name
             var index = item_list.indexOf(old_name);
@@ -383,6 +384,25 @@
 
             // clear input bar
             new_name_input.value = "";
+
+
+            // rename item in database
+            $.ajax({
+                      type:    "PUT",
+                      url:     ngrokURL + "/renameItem/users/" + userID + "/category/" +
+                                        catagoryID + "/oldIngredient/" + old_name + "/newIngredient/" + new_name,
+                      success: function(data){
+                        console.log("Data from server after add user: " + data);
+
+                      },
+                      // vvv---- This is the new bit
+                      error:   function() {
+                            alert("Error: POST request didn't work");
+                      }
+                });
+
+
+
         }
     }
 
