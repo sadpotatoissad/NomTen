@@ -65,7 +65,7 @@ app.get('/users/:userId', function(req, res) {
 		if(err) console.log(err);
 		console.log("Sending data for user: " + user);
 
-		var query = {userId: user};
+		var query = {user_id: user};
 
 		db.collection('AWebsiteHasNoName').find(query).toArray(function(err, result) {
 			if (err) throw err;
@@ -76,7 +76,6 @@ app.get('/users/:userId', function(req, res) {
 		});
 
 	});
-	res.sendStatus(200);
 });
 
 
@@ -155,7 +154,7 @@ app.post('/user_login', function(req, res) {
 		});
 });
 
-app.update('/users/:userId/category/:categoryId/old_ingredient/:oldIngredientId/new_ingredient/:newIngredientId', function(req, res) {
+app.put('/users/:userId/category/:categoryId/old_ingredient/:oldIngredientId/new_ingredient/:newIngredientId', function(req, res) {
 	var user = req.params.userId;
 	var category = req.params.categoryId;
 	var oldIngredient = req.params.oldIngredientId;
