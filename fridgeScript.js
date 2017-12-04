@@ -328,7 +328,9 @@
 
     var renamerTitleString = "Rename - ";
     var element_to_rename;
+    var old_name;
     var new_name;
+    var catagoryID;
     var modal_renamer = document.getElementById('renamerModal');
         
 
@@ -369,8 +371,12 @@
             return;
         } else {
             
-            var old_name = element_to_rename.innerHTML;
+            old_name = element_to_rename.innerHTML;
             element_to_rename.textContent = new_name;
+
+            catagoryID = element_to_rename.parentNode.parentNode.id;
+
+            console.log("catagory of renamed item is " + catagoryID)
 
             // update the list with the new name
             var index = item_list.indexOf(old_name);
@@ -383,6 +389,35 @@
 
             // clear input bar
             new_name_input.value = "";
+
+
+           //put('renameItem/users/:userId/category/:categoryId/old_ingredient/:oldIngredientId/new_ingredient/:newIngredientId'
+
+            /*
+           $.put(ngrokURL + "/renameItem/" + userID + "catagoryId/" + 
+                catagoryID + "oldIngredientId/" + old_name + "newIngredientId/" + new_name, 
+                function(data){
+                    console.log("Data from server after add user: " + data);
+           });
+            */
+
+            // rename item in database
+            $.ajax({
+                      type:    "PUT",
+                      url:     ngrokURL + "/renameItem/users/" + userID + "/category/" + 
+                                        catagoryID + "/oldIngredient/" + old_name + "/newIngredient/" + new_name,
+                      success: function(data){
+                        console.log("Data from server after add user: " + data);
+                        
+                      },
+                      // vvv---- This is the new bit
+                      error:   function() {
+                            alert("Error: POST request didn't work");
+                      }
+                });
+
+            
+
         }
     }
 

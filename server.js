@@ -185,7 +185,8 @@ app.post('/user_login', function(req, res){
 
 });
 
-app.put('/users/:userId/category/:categoryId/old_ingredient/:oldIngredientId/new_ingredient/:newIngredientId', function(req, res) {
+
+app.put('/renameItem/users/:userId/category/:categoryId/oldIngredient/:oldIngredientId/newIngredient/:newIngredientId', function(req, res) {
 	var user = req.params.userId;
 	var category = req.params.categoryId;
 	var oldIngredient = req.params.oldIngredientId;
@@ -208,7 +209,7 @@ app.put('/users/:userId/category/:categoryId/old_ingredient/:oldIngredientId/new
 				);
 
 		  	var addToSet = {};
-			addToSet[category] = ingredient;
+			addToSet[category] = newIngredient;
 			console.log(addToSet);
 		  	//should make addToSet = {category: [ingredient]}
 			db.collection('AWebsiteHasNoName').update(
