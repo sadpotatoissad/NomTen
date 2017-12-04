@@ -1,5 +1,5 @@
     var userID;
-    var ngrokURL = "http://30eed78b.ngrok.io";
+    var ngrokURL = "http://26f2b733.ngrok.io";
     document.ready
     $(document).ready(function(){
       if(document.cookie != ''){
@@ -49,7 +49,7 @@
 
                         $.get(ngrokURL + '/users/' + userID, function(user_data){
                             console.log("the user data is: " + user_data);
-                            
+
                             var u_id = user_data[0]. user_id;
                             var u_proteinList = user_data[0].proteinList;
                             var u_carbList = user_data[0].carbList;
@@ -98,7 +98,7 @@
 
     function reloadFridge(catagory, list){
         for (var i = 0; i < list.length; i++) {
-            var item_name = list[i]; 
+            var item_name = list[i];
 
             item_list.push(item_name);
 

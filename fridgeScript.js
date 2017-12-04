@@ -259,8 +259,8 @@
         }
 
 	    // add item to database
-		$.post(ngrokURL + '/add_ingredient', 
-			{"user":userID, "category":currentSelectedList, "ingredient":item_name}, 
+		$.post(ngrokURL + '/add_ingredient',
+			{"user":userID, "category":currentSelectedList, "ingredient":item_name},
 			function(data, status){
 				console.log("Data from server after add: " + data + "\nStatus: " + status);
 		});
@@ -330,18 +330,18 @@
     var element_to_rename;
     var new_name;
     var modal_renamer = document.getElementById('renamerModal');
-        
+
 
     // opens up a dialog to rename selected item and renames it
     function renameItem(e) {
 
         var id = $(e).attr("id");
         element_to_rename = document.getElementById(id);
-        //item_to_rename = element.childNodes[1]; 
+        //item_to_rename = element.childNodes[1];
         var item_name = element_to_rename.innerHTML;
         console.log("item to rename is " + item_name);
 
-        // Open the modal 
+        // Open the modal
         document.getElementById('renamerModal').setAttribute("style", "display: block");
 
         // rename title in modal
@@ -368,7 +368,7 @@
             new_name_input.value = "";
             return;
         } else {
-            
+
             var old_name = element_to_rename.innerHTML;
             element_to_rename.textContent = new_name;
 
@@ -395,7 +395,7 @@
         var item = element.parentNode;
     	var category = item.parentNode.id;
         console.log("category removed is " + category);
-    	
+
     	/*switch(category) {
     	    case 'Protein':
             	category = 'proteinList';
@@ -419,7 +419,7 @@
     	        category = 'ERROR';
     		break;
     	} */
-	
+
 
         // size of list is 1 before removing last item
         if (item_list.length == 1) {
@@ -440,10 +440,10 @@
 
         // remove item from our visual list
         item.parentNode.removeChild(item);
-	
+
 	// remove item from our database
-	/*$.post(ngrokURL + '/remove_ingredient', 
-		{"user":userID, "category":category, "ingredient":itemName}, 
+	/*$.post(ngrokURL + '/remove_ingredient',
+		{"user":userID, "category":category, "ingredient":itemName},
 		function(data, status){
 			console.log("Data from server after remove: " + data + "\nStatus: " + status);
 	});*/
