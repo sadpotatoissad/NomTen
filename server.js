@@ -17,12 +17,23 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
 //socket stuff
-var server = require('http').Server(app);
+var socketApp = require('express')();
+var server = require('http').Server(socketApp);
 var io = require('socket.io')(server);
+
+socketApp.use(bodyParser.urlencoded({extended: false}));
+socketApp.use(bodyParser.json());
 
 server.listen(80, function(){
 	console.log("Socket server listening on PORT 80")
 });
+/*
+var socketApp = require('express')();
+var server = socketApp.listen(80, function(){
+	console.log("Socket server listening on PORT 80")
+});;
+var io = require('socket.io').listen(server);*/
+
 
 // to send html over network
 // https://stackoverflow.com/questions/31504798/using-express-js-to-serve-html-file-along-with-scripts-css-and-images
@@ -230,18 +241,20 @@ app.put('/renameItem/users/:userId/category/:categoryId/oldIngredient/:oldIngred
 		});
 });
 
-app.get('/api/messages', function(req, res){
+socketApp.get('/api/messages', function(req, res){
 	var id = req.body.id;
 	var message = req.body.message;
 
 	MongoClient.connect(url, function(err, db){
 		if(err) console.log(err)
-		db.collection('AWebsiteHasNoName').find().toArray(function(err,result){res.send(result);});
+		db.collection('AWebsiteHasNoNameMessages').find().toArray(function(err,result){res.send(result);});
 		db.close();
 	});
 });
 
-app.post('/api/messages', function(req, res){
+// curl -H "Content-Type: application/json" -X POST -d '{"id": "1", "message":"test"}' http://121de550.ngrok.io/api/messages
+socketApp.post('/api/messages', function(req, res){
+	console.log(req.body);
 	var id = req.body.id;
 	var message = req.body.message;
 
@@ -251,25 +264,24 @@ app.post('/api/messages', function(req, res){
 		db.collection('AWebsiteHasNoNameMessages').insertOne(
 			{id: id, message: message}
 			);
-
-		io.socket.emit({id: id, message: message});
+		console.log("emitting");
+		io.sockets.emit('message', {id: id, message: message});
 
 		res.sendStatus(200);
 		db.close();
 	});
 });
 
-app.delete('/api/messages/:messageId', function (req, res){
+socketApp.delete('/api/messages/:messageId', function (req, res){
 	var messageId = req.params.messageId;
 
-	MongoClient.connect(url, function(err,res){
+	MongoClient.connect(url, function(err,result){
 			if(err) console.log(err)
 			console.log("Removing message");
-			db = res
+			db = result
 
-			db.collection('AWebsiteHasNoName').update(
-				{},
-				{$unset: {id: messageId}}
+			db.collection('AWebsiteHasNoNameMessages').remove(
+				{id: messageId}
 				);
 			res.sendStatus(200);
 			db.close();
