@@ -41,13 +41,7 @@ function addNewIngredient(user_id, foodList, foodUl) {
     }),
     contentType: "application/json; charset=utf-8",
     success: function(result) {
-      $(foodUl).append("<li><span onClick=\"deleteIngredient(" + "'" +
-        user_id + "'" + "," + "'" + foodList + "'" + "," + "'" + foodUl +
-        "'" + "," + ingredientWithQuotes +
-        ")\"><i class='fa fa-trash'></i></span> " + newfoodItem +
-        "</li>");
-        //add ingredient to item_list used for percentage filter
-        item_list.push(newfoodItem);
+
     },
     error: function() {
       console.log("error on POST add ingredient");
@@ -58,6 +52,14 @@ function addNewIngredient(user_id, foodList, foodUl) {
       $("#alertErrorProfile").fadeOut(3000);
     }
   });
+  //new element without waiting for post to finish for better ux
+  $(foodUl).append("<li><span onClick=\"deleteIngredient(" + "'" +
+    user_id + "'" + "," + "'" + foodList + "'" + "," + "'" + foodUl +
+    "'" + "," + ingredientWithQuotes +
+    ")\"><i class='fa fa-trash'></i></span> " + newfoodItem +
+    "</li>");
+    //add ingredient to item_list used for percentage filter
+    item_list.push(newfoodItem);
 };
 
 //===========================for styling =====================================
