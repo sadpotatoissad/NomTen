@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>NomTen</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Pacifico" rel="stylesheet">
+    <link rel="stylesheet" href="/stylesheets/styles.css">
+    <link rel="stylesheet" href="/stylesheets/profile.css">
+    <script src="/scripts/ingredients.js" charset="utf-8"></script>
+    <script src="/scripts/filter.js" charset="utf-8"></script>
+    <script src="/scripts/index.js" charset="utf-8"></script>
+    <script src="/scripts/recipies.js" charset="utf-8"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  </head>
+  <body>
+  <nav class="navbar navbar-default">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="/">NomTen</a>
+      </div>
+      <div class="collapse navbar-collapse">
+        <ul class="nav navbar-nav navbar-right">
+          <% if(!currentUser){ %>
+          <li><a href="/">Sign In</a></li>
+          <li><a href="/register">Sign Up</a></li>
+          <% } else { %>
+          <li><a href="#"><i class="fa fa-user" ></i> <%=currentUser.username%></a></li>
+          <li><a href="/logout">Logout</a></li>
+          <% } %>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <div class="container">
+    <% if(error && error.length > 0){ %>
+    <div class="alert alert-danger" role="alert">
+      <%= error %>
+    </div>
+    <% } %>
+    <% if(success && success.length > 0){ %>
+    <div class="alert alert-success" role="alert">
+      <%= success %>
+    </div>
+    <% } %>
+    <div id=alertInfoProfile class="alert alert-info" role="alert">
+      <p id=infoAlert></p>
+    </div>
+    <div id=alertErrorProfile class="alert alert-danger" role="alert">
+      <p id=errorAlert></p>
+    </div>
+  </div>
+
+    <script>
+      var user = <%-JSON.stringify(currentUser)%>;
+        $("document").ready(function(){
+          ingredientShow(user.vegList, "#vegUl", user._id);
+          ingredientShow(user.dairyList, "#dairyUl", user._id);
+          ingredientShow(user.miscList, "#miscUl", user._id);
+          ingredientShow(user.proteinList, "#proteinUl", user._id);
+          ingredientShow(user.fruitList, "#fruitUl", user._id);
+          ingredientShow(user.carbList, "#carbUl", user._id);
+        });
+    </script>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-5">
+          <div id="WholeFridge">
+            <h1>Fridge
+              <span id="info" data-toggle="tooltip" data-placement="right" title="
+                Maintain a virtualization of your fridge by adding
+                ingredients to the below categories.
+                To add an ingredient: press the white plus sign next
+                to the specific catagory name to reveal
+                and input and then input your ingredient
+                name and press the black plus sign to add the
+                ingredient.
+                To delete an ingredient: hoover over the given
+                ingredient and press the trashcan icon">
+                <i class="fa fa-info"></i>
+              </span>
+            </h1>
+            <div>
+              <h2>Vegetables<span id=plusVeg><i class="fa fa-plus"></i></span></h2>
+              <div id=vegInput class="ingredientInput">
+                <input id=vegList class="category" type="text" placeholder="Add A New Vegatable" >
+                <i class="fa fa-plus-square" onClick=addNewIngredient("<%=currentUser._id%>","vegList","#vegUl") ></i>
+              </div>
+              <ul id=vegUl class="ingredientDisplay">
+              </ul>
+            </div>
+            <div>
+              <h2>Proteins<span id=plusProtein><i class="fa fa-plus"></i></span></h2>
+              <div id=proteinInput class="ingredientInput">
+                <input id=proteinList class="category" type="text" placeholder="Add A New Protein" >
+                <i class="fa fa-plus-square" onClick=addNewIngredient("<%=currentUser._id%>","proteinList","#proteinUl") ></i>
+              </div>
+              <ul id=proteinUl class="ingredientDisplay">
+              </ul>
+            </div>
+            <div>
+              <h2>Dairies<span id=plusDairy><i class="fa fa-plus"></i></span></h2>
+              <div id=dairyInput class="ingredientInput">
+                <input id=dairyList class="category" type="text" placeholder="Add A New Dairy Product" >
+                <i class="fa fa-plus-square" onClick=addNewIngredient("<%=currentUser._id%>","dairyList","#dairyUl") ></i>
+              </div>
+              <ul id=dairyUl class="ingredientDisplay">
+              </ul>
+            </div>
+            <div>
+              <h2>Carbs<span id=plusCarb><i class="fa fa-plus"></i></span></h2>
+              <div id=carbInput class="ingredientInput">
+                <input id=carbList class="category" type="text" placeholder="Add A New Carb" >
+                <i class="fa fa-plus-square" onClick=addNewIngredient("<%=currentUser._id%>","carbList","#carbUl") ></i>
+              </div>
+              <ul id=carbUl class="ingredientDisplay">
+              </ul>
+            </div>
+            <div>
+              <h2>Fruits<span id=plusFruit><i class="fa fa-plus"></i></span></h2>
+              <div id=fruitInput class="ingredientInput">
+                <input id=fruitList class="category" type="text" placeholder="Add A New Fruit" >
+                <i class="fa fa-plus-square" onClick=addNewIngredient("<%=currentUser._id%>","fruitList","#fruitUl") ></i>
+              </div>
+              <ul id=fruitUl class="ingredientDisplay">
+              </ul>
+            </div>
+            <div>
+              <h2>Miscellaneous<span id=plusMisc><i class="fa fa-plus"></i></span></h2>
+              <div class="ingredientInput" id=miscInput>
+                <input id=miscList class="category" type="text" placeholder="Add A New Ingredient" >
+                <i class="fa fa-plus-square" onClick=addNewIngredient("<%=currentUser._id%>","miscList","#miscUl") ></i>
+              </div>
+              <ul id=miscUl class="ingredientDisplay">
+              </ul>
+            </div>
+          </div>
+        </div>
+        <!-- ############### -->
+        <!-- filters -->
+        <!-- ############### -->
+        <div class="container col-sm-7">
+          <!-- active filters selected from dropdown by user will be appended below -->
+          <p id=filter-position></p>
+          <div id="filtercontent" >
+            <!--filters implementation -->
+            <div id="filters" class="col-sm-12 container">
+              <h1>Filters: </h1>
+              <p id=filter-position></p>
+              <div id=ingredientsInclude class="container">
+                <form class="form-horizontal" >
+                  <div class="form-group">
+                    <label style="color:grey" class="control-label col-sm-2" >Ingredients I want to use:</label>
+                    <div class="col-sm-4">
+                      <textarea id=iWant class="form-control" rows="5"  placeholder="Input Ingredients I want to eat today in a comma separated list eg. Squash, Cranberries"></textarea>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-4">
+                      <button type=button class="btn btn-default" onclick=createlstWant()>Add to filters</button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+              <div id=Fridge class="container">
+                <form class="form-horizontal" >
+                  <div class="form-group">
+                    <label style="color:grey" class="control-label col-sm-2" >Percentage of ingredients in fridge:</label>
+                    <div class="col-sm-4">
+                      <textarea id=InFridge class="form-control" rows="2"  placeholder="Input the percentage of ingredients that is to be found in the fridge eg. 15"></textarea>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-4">
+                      <button type="button" class="btn btn-default" onclick=percentageInFridge()>Add to filters</button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+              <div id=ingredientExclude class="container">
+                <form class="form-horizontal" >
+                  <div class="form-group">
+                    <label style="color:grey" class="control-label col-sm-2" >Ingredients I don't want to use:</label>
+                    <div class="col-sm-4">
+                      <textarea id=dontWant class="form-control" rows="5"  placeholder="Input Ingredients I  don't want to eat today in a comma separated list eg. Chicken, Apple Cider"></textarea>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-4">
+                      <button type="button" class="btn btn-default" onclick=createlstDontWant()>Add to filters</button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+              <div id=dropdownfilters class="col-sm-12 container">
+                <div class="form-group">
+                  <ul>
+                    <li class="col-sm-6 dropfilterli">
+                      <label for="sel1">Serving Size</label>
+                      <select class="form-control" id=servingSize>
+                        <option onclick="dropDownSelect(this)">Dropdown to select</option>
+                        <option onclick="dropDownSelect(this)">1</option>
+                        <option onclick="dropDownSelect(this)">2</option>
+                        <option onclick="dropDownSelect(this)">3 - 4</option>
+                        <option onclick="dropDownSelect(this)">5 - 12</option>
+                        <option onclick="dropDownSelect(this)">more than 13</option>
+                      </select>
+                    </li>
+                    <li class="col-sm-6 dropfilterli">
+                      <label for="sel1">Diet Type</label>
+                      <select class="form-control" id=diet>
+                        <option onclick="dropDownSelect(this)">Dropdown to select</option>
+                        <option onclick="dropDownSelect(this)">Vegetarian</option>
+                        <option onclick="dropDownSelect(this)">Vegan</option>
+                        <option onclick="dropDownSelect(this)">Pescetarian</option>
+                        <option onclick="dropDownSelect(this)">Ovo vegetarian</option>
+                        <option onclick="dropDownSelect(this)">Lacto vegetarian</option>
+                      </select>
+                    </li>
+                    <li class="col-sm-6 dropfilterli">
+                      <label for="sel1">Cuisine Type</label>
+                      <select class="form-control" id=cuisine>
+                        <option onclick="dropDownSelect(this)">Dropdown to select</option>
+                        <option onclick="dropDownSelect(this)">American</option>
+                        <option onclick="dropDownSelect(this)">Mexican</option>
+                        <option onclick="dropDownSelect(this)">Italian</option>
+                        <option onclick="dropDownSelect(this)">Asian</option>
+                        <option onclick="dropDownSelect(this)">French</option>
+                        <option onclick="dropDownSelect(this)">Southwestern</option>
+                        <option onclick="dropDownSelect(this)">Barbecue</option>
+                        <option onclick="dropDownSelect(this)">Indian</option>
+                        <option onclick="dropDownSelect(this)">Chinese</option>
+                        <option onclick="dropDownSelect(this)">Mediterranean</option>
+                        <option onclick="dropDownSelect(this)">Greek</option>
+                        <option onclick="dropDownSelect(this)">Spanish</option>
+                        <option onclick="dropDownSelect(this)">Thai</option>
+                        <option onclick="dropDownSelect(this)">Cuban</option>
+                      </select>
+                    </li>
+                    <li class="col-sm-6 dropfilterli">
+                      <label for="sel1">Course Type</label>
+                      <select class="form-control" id="course">
+                        <option onclick="dropDownSelect(this)">Dropdown to select</option>
+                        <option onclick="dropDownSelect(this)">Main Dishes</option>
+                        <option onclick="dropDownSelect(this)">Side Dishes</option>
+                        <option onclick="dropDownSelect(this)">Beverages</option>
+                        <option onclick="dropDownSelect(this)">Soups</option>
+                        <option onclick="dropDownSelect(this)">Desserts</option>
+                        <option onclick="dropDownSelect(this)">Breads</option>
+                        <option onclick="dropDownSelect(this)">Appetizers</option>
+                        <option onclick="dropDownSelect(this)">Lunch and Snacks</option>
+                        <option onclick="dropDownSelect(this)">Breakfast and Brunch</option>
+                        <option onclick="dropDownSelect(this)">Condiments and Sauce</option>
+                        <option onclick="dropDownSelect(this)">Cocktails</option>
+                      </select>
+                    </li>
+                    <li class="col-sm-6 dropfilterli">
+                      <label for="sel1">Total Time</label>
+                      <select class="form-control" id="time">
+                        <option onclick="dropDownSelect(this)">Dropdown to select</option>
+                        <option onclick="dropDownSelect(this)">20 and under</option>
+                        <option onclick="dropDownSelect(this)">40 and under</option>
+                        <option onclick="dropDownSelect(this)">60 and under</option>
+                        <option onclick="dropDownSelect(this)">90 and under</option>
+                        <option onclick="dropDownSelect(this)">180 and under</option>
+                      </select>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div id=allergies class="col-sm-12 container">
+                <p>Select Allergies:</p>
+                <form>
+                  <label class="checkbox-inline">
+                  <input onclick="createlstAllergies()" type="checkbox" value="">Dairy
+                  </label>
+                  <label class="checkbox-inline">
+                  <input onclick="createlstAllergies()" type="checkbox" value="">Egg
+                  </label>
+                  <label class="checkbox-inline">
+                  <input onclick="createlstAllergies()" type="checkbox" value="">Gluten
+                  </label>
+                  <label class="checkbox-inline">
+                  <input onclick="createlstAllergies()" type="checkbox" value="">Seafood
+                  </label>
+                  <label class="checkbox-inline">
+                  <input onclick="createlstAllergies()" type="checkbox" value="">Sesame
+                  </label>
+                  <label class="checkbox-inline">
+                  <input onclick="createlstAllergies()" type="checkbox" value="">Soy
+                  </label>
+                  <label class="checkbox-inline">
+                  <input onclick="createlstAllergies()" type="checkbox" value="">Sulfite
+                  </label>
+                  <label class="checkbox-inline">
+                  <input onclick="createlstAllergies()" type="checkbox" value="">Tree Nut
+                  </label>
+                  <label class="checkbox-inline">
+                  <input onclick="createlstAllergies()" type="checkbox" value="">Wheat
+                  </label>
+                </form>
+              </div>
+              <div>
+                <button class="btn btn-default btn-lg" id="search" onclick="clicked()">Search for my recommended recipies!</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!--########### RECIPE DISPLAY #############-->
+        <div id=recipeDisplayLocation class="col-sm-12 container">
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer>NomTen <i class="fa fa-copyright"></i> 2018</footer>
+  </body>
+</html>

@@ -1,8 +1,0 @@
-authtoken: 7Hn2SchJhhVtAquVMK4zC_4PK5JkL8DL773dRmkfz49
-tunnels:
-  express:
-    proto: http
-    addr: 3000
-  socket:
-    proto: http
-    addr: 80

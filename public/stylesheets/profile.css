@@ -1,0 +1,239 @@
+body{
+  font-family: Roboto, sans-serif;
+}
+
+#alertInfoProfile, #alertErrorProfile {
+  display: none;
+}
+
+/*Style for the fridge*/
+
+#WholeFridge h1{
+  margin: auto;
+  background: #ffcc99;
+  color: white;
+  padding: 20px 10px;
+  text-transform: uppercase;
+  font-size: 2em;
+  font-weight: 400;
+  text-align: center;
+}
+
+.tooltip{
+  width: 300px;
+  opacity: 0.5;
+}
+#info{
+  float: right;
+}
+h2{
+  margin: auto;
+  color: white;
+  padding: 10px;
+  text-transform: uppercase;
+  text-align: center;
+  font-size: 1.5em;
+}
+
+textarea .form-control{
+  width: auto;
+}
+
+ul{
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+#WholeFridge{
+  margin: 0;
+  padding-left:10px;
+  padding-right: 10px;
+  padding-bottom: 20px;
+  margin-bottom: 10%;
+  background-color: 	#F0F0F0;
+  border-radius: 15px;
+  -webkit-border-radius: 15px;
+  -moz-border-radius: 15px;
+}
+.completed{
+  text-decoration: line-through;
+  color: rgb(128, 128, 128);
+}
+
+input{
+  font-size: 18px;
+  width: 100%;
+  padding: 13px 30px;
+  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  color: #2980b9;
+  border: 3px solid rgba(0, 0, 0, 0);
+}
+
+.ingredientInput{
+background: white;
+width: 100%;
+margin-bottom: auto;
+}
+
+#vegInput, #dairyInput, #fruitInput, #carbInput, #proteinInput, #miscInput{
+  display: none;
+}
+
+.fa-plus-square{
+  float: right;
+  font-size: 3em;
+  margin: auto;
+}
+
+.fa-plus{
+  float:right;
+}
+
+.ingredientDisplay li {
+  background: #fff;
+  line-height: 40px;
+  color: #666;
+}
+
+.ingredientDisplay li span{
+  background: #e74c3c;
+  width:0px;
+  margin-right: 20px;
+  text-align: center;
+  color: #fff;
+  display: inline-block;
+  transition: 0.07s linear;
+  opacity: 0;
+}
+
+.ingredientDisplay li:hover span{
+  width: 40px;
+  opacity: 1;
+}
+input:focus{
+  background: #fff;
+  border: 3px solid #2980b9;
+  highlight: none;
+}
+
+.ingredientDisplay li:nth-child(2n){
+  background: 	#F0F0F0;
+}
+
+.fa-user{
+  font-size:1.5em;
+  float: left;
+  margin: -3px 5px;
+}
+
+/*Style for filters*/
+
+.dropfilterli{
+  list-style: none;
+}
+
+textarea .form-control{
+  width: auto;
+}
+
+#allergies{
+  margin-top: 2em;
+  margin-bottom: 2em;
+}
+
+#allergies form .checkbox-inline input[type=checkbox]{
+margin-left: -65%;
+}
+
+#allergies form{
+  display: inline-block;
+}
+#allergies p{
+  font-weight: bold;
+  font-size: 1.2em;
+}
+
+#search{
+  width: 100%;
+}
+
+
+/*Stype for recipe results*/
+.modal-title{
+  text-align: center;
+  font-size: 2em;
+}
+
+img{
+  -webkit-border-radius: 15px;
+  -moz-border-radius: 15px;
+  border-radius: 15px;
+  padding-left: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+
+.Recipe{
+  margin: 10px;
+  display: -webkit-flex; /* Safari */
+  display: flex;
+  float: left;
+  height: 100%;
+  width: 500px;
+  color: grey;
+  border-style:solid;
+  border-width: thin;
+  -webkit-border-radius: 15px;
+  -moz-border-radius: 15px;
+  border-radius: 15px;
+  position: relative;
+}
+
+.Recipe h1{
+  font-size: 24px;
+  font-weight: 400;
+  text-align: center;
+}
+
+/*Style for Modals*/
+#modalInnerImg{
+   -webkit-border-radius: 25px;
+   -moz-border-radius: 25px;
+   border-radius: 25px;
+   width : 100%;
+}
+
+#recipeAttributes{
+  font-size: 2.5em;
+  margin-top: 10px;
+}
+
+#ingredientsModal{
+  text-align: center;
+}
+
+#ingredientsModal ul li{
+  width: 100%;
+  background: #fff;
+  line-height: 40px;
+  color: #666;
+}
+
+#ingredientsModal li:nth-child(2n){
+  background: #f7f7f7;
+}
+
+.modal-footer{
+  text-align: center;
+  margin:10px;
+  padding-left: 20%;
+}
+
+#sourceBtn{
+  background: #ffb366;
+  color:white;
+}

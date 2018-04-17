@@ -1,0 +1,45 @@
+.navbar{
+  background: #ffb366;
+  margin-bottom: 30px;
+  border: none;
+  opacity: 0.7;
+  height: 60px;
+  padding-top: 5px;
+  font-size: 1.2em;
+  font-family: Roboto, sans-serif;
+  color:white;
+}
+
+.navbar-default .navbar-nav li a{
+  color: white;
+}
+
+.navbar-default .container-fluid .navbar-brand{
+  color: white;
+  font-size: 1.5em;
+  font-family: Pacifico, sans-serif;
+}
+
+
+#showPofile{
+opacity: 0.8;
+background: #ffb366;
+color: white;
+font-size: 2em;
+}
+
+footer{
+   margin-top: 200px;
+   height: 60px;
+   padding: 10px;
+   font-size: 1.5em;
+   position: relative;
+   left: 0;
+   bottom: 0;
+   width: 100%;
+   overflow: hidden;
+   background-color: #ffb366;
+   color: white;
+   text-align: center;
+   font-family: Pacifico, sans-serif;
+}
