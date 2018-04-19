@@ -233,7 +233,7 @@ function createRecipes(recipes) {
       //scroll to recipes
       $('html, body').animate({
         scrollTop: $("#recipeDisplayLocation").offset().top
-      }, 400);
+      }, 50);
 
       // Get the modal
       var modal = document.getElementById(modalId);
