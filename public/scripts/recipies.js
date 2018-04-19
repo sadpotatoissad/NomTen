@@ -98,7 +98,7 @@ function createRecipes(recipes) {
       name.attr('style', "text-align: center;");
 
       var recipeContainer = $('<div></div>');
-      recipeContainer.attr('class', "Recipe col-sm-5");
+      recipeContainer.attr('class', "Recipe col-sm-4 col-md-4");
       var modalCount = count();
       var buttonId = "btn_" + modalCount;
       recipeContainer.attr('id', buttonId);
@@ -110,7 +110,6 @@ function createRecipes(recipes) {
       //div 1
       var modalImg = $("<img id='modalInnerImg'>");
       modalImg.attr('src', fullImgUrl);
-      modalImg.attr('width', "200");
       //modalImg.attr('style', "-webkit-border-radius: 25px;-moz-border-radius: 25px;border-radius: 25px;float: left;height: 100%;width: auto;");
 
       var modalImgDiv = $("<div class='col-sm-6'></div>");

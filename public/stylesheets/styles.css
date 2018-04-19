@@ -1,11 +1,5 @@
 .navbar{
   background: #ffb366;
-  margin-bottom: 30px;
-  border: none;
-  opacity: 0.7;
-  height: 60px;
-  padding-top: 5px;
-  font-size: 1.2em;
   font-family: Roboto, sans-serif;
   color:white;
 }
@@ -16,24 +10,21 @@
 
 .navbar-default .container-fluid .navbar-brand{
   color: white;
-  font-size: 1.5em;
   font-family: Pacifico, sans-serif;
 }
-
 
 #showPofile{
 opacity: 0.8;
 background: #ffb366;
 color: white;
-font-size: 2em;
 }
 
 footer{
-   margin-top: 200px;
-   height: 60px;
-   padding: 10px;
-   font-size: 1.5em;
+   margin-top: 60px;
+   height: 40px;
+   font-size: 1em;
    position: relative;
+   padding: 8px;
    left: 0;
    bottom: 0;
    width: 100%;

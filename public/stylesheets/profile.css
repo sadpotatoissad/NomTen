@@ -131,6 +131,12 @@ input:focus{
 
 /*Style for filters*/
 
+#filters h1{
+  font-size: 0.7 em;
+  margin-top:0;
+  padding-top:0;
+}
+
 .dropfilterli{
   list-style: none;
 }
@@ -231,9 +237,102 @@ img{
   text-align: center;
   margin:10px;
   padding-left: 20%;
+  left:0;
 }
 
 #sourceBtn{
   background: #ffb366;
   color:white;
+}
+
+.modal-dialog{
+  overflow-y: initial !important;
+}
+
+.modal-content{
+  height: 600px;
+  overflow-y: auto;
+  text-align: center;
+}
+
+/* Medium devices (landscape tablets, 768px and up) */
+@media only screen and (max-width: 768px) and (min-width: 600px) {
+  .Recipe{
+    width: 500px;
+    margin-left: 30px;
+  }
+
+  .modal-dialog{
+    margin-left: 100px;
+    width: 80%;
+  }
+
+  #modalInnerImg{
+     -webkit-border-radius: 10px;
+     -moz-border-radius: 10px;
+     border-radius: 10px;
+     height:200px;
+     width: auto;
+  }
+  #recipeAttributes{
+    font-size: 1.5em;
+    margin-top: 3px;
+  }
+
+}
+
+/* Extra small devices (phones, 600px and down) */
+@media only screen and (max-width: 600px) {
+  #search{
+    font-size: 1em;
+  }
+
+  img{
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    padding-left: 5px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    height: 100px;
+    width: auto;
+  }
+
+  .Recipe{
+    margin: 3px;
+    margin-left: 5px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    width:100%;
+  }
+
+  .Recipe h1{
+    padding: 5px;
+    font-size: 1em;
+  }
+
+  /*Style for Modals*/
+  #modalInnerImg{
+     -webkit-border-radius: 5px;
+     -moz-border-radius: 5px;
+     border-radius: 5px;
+     height:200px;
+     width: auto;
+  }
+
+  #recipeAttributes{
+    font-size: 1em;
+    margin-top: 3px;
+  }
+
+  #ingredientsModal ul li{
+    line-height: 20px;
+    padding: 3px;
+  }
+
+  .modal-content{
+    height: 400px;
+  }
+
 }

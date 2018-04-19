@@ -2,15 +2,44 @@ body{
   background-color: #000;
 }
 
+#login input{
+  margin: 3px;
+}
+
 #landing-header {
+  position: absolute;
   z-index: 1;
-  position: relative;
   text-align: center;
-  padding-top: 40vh;
+  width : 800px;
+  top:45%;
+  margin-left: -406px;
+  left: 50%;
+}
+
+/* Extra small devices (phones, 600px and down) */
+@media only screen and (max-width: 600px) {
+  #landing-header{
+    top: 35%;
+    width: 180px;
+    margin-left: -106px;
+    left: 50%;
+  }
+}
+
+/* Medium devices (landscape tablets, 768px and down) */
+@media only screen and (max-width: 768px) {
+  #landing-header {
+    width: 400px;
+    padding: 10px;
+    border-width: 2px;
+    /* -(400 + 10 + 2)/2 = -206 */
+    margin-left: -206px;
+    left: 50%;
+  }
 }
 
 #landing-header h1 {
-  font-size: 40px;
+  font-size: 2em;
   color: #fff;
   margin-bottom: 2%;
 }
@@ -20,11 +49,10 @@ body{
 }
 
 .navbar{
-  z-index: 2;
+  z-index: 1;
 }
 
 #reset{
-  font-size: 2em;
   color: white;
   left:50%;
 
@@ -32,7 +60,12 @@ body{
 
 #loginPosition{
   position:absolute;
-  align: center;
+  text-align: center;
+}
+
+#loginPosition form div input .form-control .input-sm{
+  margin: 10%;
+  background: blue;
 }
 
 .slideshow {

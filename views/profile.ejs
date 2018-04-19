@@ -7,7 +7,6 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Pacifico" rel="stylesheet">
@@ -19,12 +18,18 @@
     <script src="/scripts/recipies.js" charset="utf-8"></script>
   </head>
   <body>
+
   <nav class="navbar navbar-default">
     <div class="container-fluid">
       <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
         <a class="navbar-brand" href="/">NomTen</a>
       </div>
-      <div class="collapse navbar-collapse">
+      <div class="collapse navbar-collapse" id="myNavbar">
         <ul class="nav navbar-nav navbar-right">
           <% if(!currentUser){ %>
           <li><a href="/">Sign In</a></li>
@@ -80,8 +85,14 @@
                 and input and then input your ingredient
                 name and press the black plus sign to add the
                 ingredient.
-                To delete an ingredient: hoover over the given
-                ingredient and press the trashcan icon">
+                To delete an ingredient: hover over the given
+                ingredient and press the trashcan icon
+                To recieve recipe reconmmendations input filter parameters and press
+                'add to filters' and or select filters and then press
+                'search for my recipes' to recieve 10 reconmended recipes.
+                Please note if the percentage filter is less than 10 recipies
+                will be returned as only the recipes matching ur filter will be
+                retrieved"
                 <i class="fa fa-info"></i>
               </span>
             </h1>
@@ -149,7 +160,7 @@
           <p id=filter-position></p>
           <div id="filtercontent" >
             <!--filters implementation -->
-            <div id="filters" class="col-sm-12 container">
+            <div id="filters">
               <h1>Filters: </h1>
               <p id=filter-position></p>
               <div id=ingredientsInclude class="container">
@@ -157,7 +168,7 @@
                   <div class="form-group">
                     <label style="color:grey" class="control-label col-sm-2" >Ingredients I want to use:</label>
                     <div class="col-sm-4">
-                      <textarea id=iWant class="form-control" rows="5"  placeholder="Input Ingredients I want to eat today in a comma separated list eg. Squash, Cranberries"></textarea>
+                      <textarea id=iWant class="form-control" rows="3"  placeholder="Input Ingredients I want to eat today in a comma separated list eg. Squash, Cranberries"></textarea>
                     </div>
                   </div>
                   <div class="form-group">
@@ -187,7 +198,7 @@
                   <div class="form-group">
                     <label style="color:grey" class="control-label col-sm-2" >Ingredients I don't want to use:</label>
                     <div class="col-sm-4">
-                      <textarea id=dontWant class="form-control" rows="5"  placeholder="Input Ingredients I  don't want to eat today in a comma separated list eg. Chicken, Apple Cider"></textarea>
+                      <textarea id=dontWant class="form-control" rows="3"  placeholder="Input Ingredients I  don't want to eat today in a comma separated list eg. Chicken, Apple Cider"></textarea>
                     </div>
                   </div>
                   <div class="form-group">
@@ -312,7 +323,7 @@
           </div>
         </div>
         <!--########### RECIPE DISPLAY #############-->
-        <div id=recipeDisplayLocation class="col-sm-12 container">
+        <div id=recipeDisplayLocation class="container col-md-12 col-sm-12">
         </div>
       </div>
     </div>

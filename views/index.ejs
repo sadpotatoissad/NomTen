@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NomTen</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
     <link rel="stylesheet" href="/stylesheets/styles.css">
@@ -17,20 +18,27 @@
     <nav class="navbar navbar-default">
       <div class="container-fluid">
         <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar2">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
           <a class="navbar-brand" href="/">NomTen</a>
         </div>
-        <div class="collapse navbar-collapse">
+        <div class="collapse navbar-collapse" id="myNavbar2">
           <ul class="nav navbar-nav navbar-right">
             <% if(!currentUser){ %>
             <li><a href="/register">Sign Up</a></li>
             <% } else { %>
-            <li><a href="#"><i class="fa fa-user"></i><%=currentUser.username%></a></li>
+            <li><a href="#"><i class="fa fa-user" ></i> <%=currentUser.username%></a></li>
             <li><a href="/logout">Logout</a></li>
             <% } %>
           </ul>
         </div>
       </div>
     </nav>
+
+
     <div class="container">
       <% if(error && error.length > 0){ %>
       <div class="alert alert-danger" role="alert">
@@ -43,16 +51,16 @@
       </div>
       <% } %>
     </div>
-    <div id="landing-header">
+    <div class="container" id="landing-header">
       <h1>Welcome to <span>NomTen</span>!</h1>
       <% if(!currentUser){ %>
       <div id="loginPosition" class="container col-sm-12">
         <form action="/login" method="POST" class="form-inline">
-          <div class="form-group">
-            <input type="text" name="username" placeholder="username" class="from-control input-lg">
-            <input type="password" name="password" placeholder="password" class="from-control input-lg">
-            <input type="submit" value="Login" class="btn btn-default btn-lg">
+          <div class="form-group" id=login>
+            <input type="text" name="username" placeholder="username" class="from-control input-sm">
+            <input type="password" name="password" placeholder="password" class="from-control input-sm">
           </div>
+          <input type="submit" value="Login" class="btn btn-default btn-sm">
         </form>
         <a id=reset href="/forgot">Forgot Password?</a>
       </div>
