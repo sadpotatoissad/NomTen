@@ -1,6 +1,6 @@
 # NomTen
 A web application that allows users to maintain a virtualization of their fridge and get recipe suggests or search for relevant recipes.
-This is a update version of a group project from CSC309 at the University of Toronto by Linda Zhang, Jesse Jaura and David Wahrhaftig
+This is a updated and mostly rewritten version of a group project from CSC309 at the University of Toronto by Linda Zhang, Jesse Jaura and David Wahrhaftig
 
 NomTen: A personalized online culinary assistant
 
