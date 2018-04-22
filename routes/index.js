@@ -39,16 +39,99 @@ router.post("/register", function(req, res){
     username: req.body.username,
     email: req.body.email,
   });
+  // Registers user in the database
   User.register(newUser, req.body.password, function(err, user){
      if(err){
        req.flash("error", err.message);
        return res.redirect("/register");
      } else {
-       passport.authenticate("local")(req, res, function(){
-         req.flash("success", "Welcome to Nomlly " + user.username);
-         res.redirect("/users/" + user.username);
-       });
+      // passport.authenticate("local")(req, res, function(){
+      //   req.flash("success", "Welcome to Nomlly " + user.username);
+      //   res.redirect("/users/" + user.username);
+      // });
+
+      // Send a confirmation email
+
+      async_pkg.waterfall([
+
+        // Generate token
+        function(done) {
+          crypto.randomBytes(20, function(err, buf) {
+            var token = buf.toString("hex");
+            done(err, token);
+          });
+        },
+        function(token, done) {
+          var expTime = Date.now() + 3600000;
+          // TODO might not be able to do mongo op in the callback of another mongo op
+          User.findOneAndUpdate({ email: req.body.email },{$set:{
+            emailConfirmed: false, confirmToken: token}} 
+            ,function(err, user) {
+            if(err){
+              console.log("error finding user with given email" + err);
+              req.flash("error", "Something went wrong :(");
+            }
+            done(err, token, user);
+          });
+        },
+        function(token,user, done) {
+          var auth = {
+            auth: {
+              api_key: process.env.MAILGUNKEY,
+              domain: 'sandboxb344f4377aed47b8bbf81c09d89fc092.mailgun.org'
+            }
+          };
+          var nodemailerMailgun = nodemailer.createTransport(mg(auth));
+
+          nodemailerMailgun.sendMail({
+            to: user.email,
+            from: process.env.TESTGMAIL,
+            subject: 'Node.js Registration Confirmation',
+            text: 'You are receiving this because you (or someone else) have registered for a NomTen account.\n\n' +
+              'Please click on the following link, or paste this into your browser to complete the registration process:\n\n' +
+              'http://' + req.headers.host + '/confirmation/' + token + '\n\n' +
+              'If you did not request this, please ignore this email.\n'
+          },function(err, info){
+            if(err){
+              console.log(err);
+              req.flash("error", "error in sending registration email");
+              return res.redirect("back");
+            }
+            req.flash('success', 'An e-mail has been sent to ' + user.email + ' with further instructions.');
+            done(err, 'done');
+          });
+        }
+
+        ], function(err) {});
      }
+  });
+});
+
+// Confirm User
+router.get('/confirm/:token', function(req, res) {
+
+  User.findOne({ confirmToken: req.params.token}, function(err, user) {
+    if (!user) {
+      req.flash('error', 'Confirmation link is invalid.');
+      return res.redirect('/');
+    }
+    else if (err){
+      console.log(err);
+      req.flash("error", "something went wrong :(");
+      return res.redirect("/");
+    }
+    // TODO might not work since nested mongo calls
+    User.findOneAndUpdate({ email: req.body.email },{$set:{
+      emailConfirmed: true}} 
+      ,function(err, user) {
+      if(err){
+        console.log("error finding user with given email" + err);
+        req.flash("error", "Something went wrong :(");
+      }
+      done(err, token, user);
+    });
+    req.flash("success", "Email confirmed.")
+    res.redirect('/');
   });
 });
 
@@ -58,7 +141,11 @@ router.post("/login", passport.authenticate("local",
     failureRedirect: "/",
     failureFlash: true
   }), function(req, res){
-    res.redirect("/users/" + req.user.username)
+    // Check if user has confirmed account before allowing them in
+    if (User.findOne({ email: req.body.email }).emailConfirmed) {
+      res.redirect("/users/" + req.user.username)
+    }
+    //TODO Failure response
 });
 
 //logout route
