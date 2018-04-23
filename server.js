@@ -14,6 +14,7 @@ var express        = require("express"),
     crypto         = require("crypto"),
     User           = require("./models/users");
 require('dotenv').config();
+mongoose.Promise = global.Promise;
 
 //require routes
 var indexRoutes      = require("./routes/index"),
@@ -25,7 +26,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
 var url = process.env.DATABASEURL || "mongodb://localhost/Nomlly";
-mongoose.connect(url);
+mongoose.connect(url, {useMongoClient: true});
 
 app.use(express.static(__dirname + "/public"));
 app.use(methodOverride("_method"));

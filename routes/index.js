@@ -9,6 +9,7 @@ var express    = require("express"),
     mg         = require("nodemailer-mailgun-transport"),
     mongoose   = require("mongoose");
 require('dotenv').config();
+mongoose.Promise = global.Promise;
 
 //root route
 router.get("/", function(req, res){
