@@ -91,7 +91,7 @@ router.post("/forgot", function(req, res, next) {
       var auth = {
         auth: {
           api_key: process.env.MAILGUNKEY,
-          domain: 'sandboxb344f4377aed47b8bbf81c09d89fc092.mailgun.org'
+          domain: process.env.MAILGUNDOMAIN
         }
       };
       var nodemailerMailgun = nodemailer.createTransport(mg(auth));
@@ -190,7 +190,7 @@ router.post("/reset/:token", function(req, res) {
       var auth = {
         auth:{
           api_key : process.env.MAILGUNKEY,
-          domain: "sandboxb344f4377aed47b8bbf81c09d89fc092.mailgun.org"
+          domain: process.env.MAILGUNDOMAIN
         }
       }
       var nodemailerMailgun = nodemailer.createTransport(mg(auth));
