@@ -4,7 +4,8 @@
   "description": "<style>\r main {font-size: 1.5em;}\r li {margin-bottom: 10px;}\r </style>\r <main>\r <h1>Assignment 3</h1>\r <h2>Final Project</h2>",
   "main": "filter.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
   },
   "repository": {
     "type": "git",
@@ -34,5 +35,6 @@
     "passport-local-mongoose": "^5.0.0",
     "request": "^2.85.0"
   },
-  "devDependencies": {}
+  "devDependencies": {},
+  "homepage": "https://github.com/sadpotatoissad/NomTen#readme"
 }

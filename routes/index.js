@@ -30,18 +30,23 @@ router.get("/register", function(req, res){
 //handle sign up
 router.post("/register", function(req, res){
 
+console.log("a\n");
   if (!validateEmail(req.body.email)) {
-    req.flash("email is invalid", err.message);
+    req.flash("error", "email is invalid");
     return res.redirect("/register");
   } 
+console.log("b\n");
 
   var newUser = new User({
     username: req.body.username,
     email: req.body.email,
   });
+  console.log("c\n");
+
   // Registers user in the database
   User.register(newUser, req.body.password, function(err, user){
      if(err){
+      console.log("e\n");
        req.flash("error", err.message);
        return res.redirect("/register");
      } else {
@@ -51,11 +56,14 @@ router.post("/register", function(req, res){
       // });
 
       // Send a confirmation email
+      console.log("d\n");
+
 
       async_pkg.waterfall([
 
         // Generate token
         function(done) {
+          console.log("gen token\n");
           crypto.randomBytes(20, function(err, buf) {
             var token = buf.toString("hex");
             done(err, token);
@@ -75,10 +83,11 @@ router.post("/register", function(req, res){
           });
         },
         function(token,user, done) {
+          console.log("sending mail\n");
           var auth = {
             auth: {
               api_key: process.env.MAILGUNKEY,
-              domain: 'sandboxb344f4377aed47b8bbf81c09d89fc092.mailgun.org'
+              domain: process.env.MAILGUNDOMAIN
             }
           };
           var nodemailerMailgun = nodemailer.createTransport(mg(auth));
@@ -100,15 +109,18 @@ router.post("/register", function(req, res){
             req.flash('success', 'An e-mail has been sent to ' + user.email + ' with further instructions.');
             done(err, 'done');
           });
+          console.log("sent\n");
         }
 
-        ], function(err) {});
+        ], function(err) {if (err) return next(err);
+    res.redirect('/');
+  });
      }
   });
 });
 
 // Confirm User
-router.get('/confirm/:token', function(req, res) {
+router.get('/confirmation/:token', function(req, res) {
 
   User.findOne({ confirmToken: req.params.token}, function(err, user) {
     if (!user) {
@@ -121,14 +133,15 @@ router.get('/confirm/:token', function(req, res) {
       return res.redirect("/");
     }
     // TODO might not work since nested mongo calls
-    User.findOneAndUpdate({ email: req.body.email },{$set:{
+    console.log("before find");
+    User.findOneAndUpdate({ confirmToken: req.params.token },{$set:{
       emailConfirmed: true}} 
       ,function(err, user) {
+        console.log("found " + user);
       if(err){
         console.log("error finding user with given email" + err);
         req.flash("error", "Something went wrong :(");
       }
-      done(err, token, user);
     });
     req.flash("success", "Email confirmed.")
     res.redirect('/');
@@ -141,11 +154,18 @@ router.post("/login", passport.authenticate("local",
     failureRedirect: "/",
     failureFlash: true
   }), function(req, res){
+  console.log(req.user.emailConfirmed);
     // Check if user has confirmed account before allowing them in
-    if (User.findOne({ email: req.body.email }).emailConfirmed) {
+    //if (User.findOne({ email: req.body.email }).emailConfirmed) {
+    //  res.redirect("/users/" + req.user.username)
+    //}
+    //TODO Why is the whole user sent in request?
+    if (req.user.emailConfirmed) {
       res.redirect("/users/" + req.user.username)
-    }
+    } else {
     //TODO Failure response
+    req.flash("error", "Email not confirmed.")
+    }
 });
 
 //logout route
@@ -184,7 +204,7 @@ router.post("/forgot", function(req, res, next) {
       var auth = {
         auth: {
           api_key: process.env.MAILGUNKEY,
-          domain: 'sandboxb344f4377aed47b8bbf81c09d89fc092.mailgun.org'
+          domain: process.env.MAILGUNDOMAIN
         }
       };
       var nodemailerMailgun = nodemailer.createTransport(mg(auth));
@@ -283,7 +303,7 @@ router.post("/reset/:token", function(req, res) {
       var auth = {
         auth:{
           api_key : process.env.MAILGUNKEY,
-          domain: "sandboxb344f4377aed47b8bbf81c09d89fc092.mailgun.org"
+          domain: process.env.MAILGUNDOMAIN
         }
       }
       var nodemailerMailgun = nodemailer.createTransport(mg(auth));
