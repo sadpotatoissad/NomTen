@@ -40,6 +40,12 @@ router.post("/register", function(req, res){
       email: req.body.email,
     });
 
+    if (User.findOne({email: req.body.email}) == null) {
+      console.log("email already exists");
+      req.flash("error", "A user with the given email is already registered");
+      return res.redirect("/register");
+    } else {
+
     // Registers user in the database
     User.register(newUser, req.body.password, function(err, user){
        if(err){
@@ -99,6 +105,7 @@ router.post("/register", function(req, res){
               }
               req.flash('success', 'An e-mail has been sent to ' + user.email + ' with further instructions.');
               done(err, 'done');
+              res.redirect('/');
             });
           }
 
@@ -108,10 +115,10 @@ router.post("/register", function(req, res){
             User.find({email: req.body.email}).remove({email: req.body.email}, function(){});
             return res.redirect("back");
           }
-          res.redirect('/');
         });
        }
     });
+  }
   }
 });
 
@@ -133,7 +140,7 @@ router.get('/confirmation/:token', function(req, res) {
     User.findOneAndUpdate({ confirmToken: req.params.token },{$set:{
       emailConfirmed: true}} 
       ,function(err, user) {
-        console.log("found " + user);
+        console.log("verified user email");
       if(err){
         console.log("error finding user with given email" + err);
         req.flash("error", "Something went wrong :(");
