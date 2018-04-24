@@ -30,93 +30,89 @@ router.get("/register", function(req, res){
 //handle sign up
 router.post("/register", function(req, res){
 
-console.log("a\n");
   if (!validateEmail(req.body.email)) {
     req.flash("error", "email is invalid");
     return res.redirect("/register");
-  } 
-console.log("b\n");
+  } else {
 
-  var newUser = new User({
-    username: req.body.username,
-    email: req.body.email,
-  });
-  console.log("c\n");
+    var newUser = new User({
+      username: req.body.username,
+      email: req.body.email,
+    });
 
-  // Registers user in the database
-  User.register(newUser, req.body.password, function(err, user){
-     if(err){
-      console.log("e\n");
-       req.flash("error", err.message);
-       return res.redirect("/register");
-     } else {
-      // passport.authenticate("local")(req, res, function(){
-      //   req.flash("success", "Welcome to Nomlly " + user.username);
-      //   res.redirect("/users/" + user.username);
-      // });
+    // Registers user in the database
+    User.register(newUser, req.body.password, function(err, user){
+       if(err){
+         req.flash("error", err.message);
+         return res.redirect("/register");
+       } else {
+        // Send a confirmation email
 
-      // Send a confirmation email
-      console.log("d\n");
+        async_pkg.waterfall([
 
+          // Generate token
+          function(done) {
+            crypto.randomBytes(20, function(err, buf) {
+              var token = buf.toString("hex");
+              done(err, token);
+            });
+          },
+          function(token, done) {
+            // Find User
+            var expTime = Date.now() + 3600000;
+            // TODO use expTime
+            // TODO resend confirmation email page
+            User.findOneAndUpdate({ email: req.body.email },{$set:{
+              emailConfirmed: false, confirmToken: token}} 
+              ,function(err, user) {
+              if(err){
+                console.log("error finding user with given email" + err);
+                req.flash("error", "Something went wrong :(");
+              }
+              done(err, token, user);
+            });
+          },
+          function(token,user, done) {
+            // Send confirmation email
+            var auth = {
+              auth: {
+                api_key: process.env.MAILGUNKEY,
+                domain: process.env.MAILGUNDOMAIN
+              }
+            };
+            var nodemailerMailgun = nodemailer.createTransport(mg(auth));
 
-      async_pkg.waterfall([
+            nodemailerMailgun.sendMail({
+              to: user.email,
+              from: process.env.TESTGMAIL,
+              subject: 'Node.js Registration Confirmation',
+              text: 'You are receiving this because you (or someone else) have registered for a NomTen account.\n\n' +
+                'Please click on the following link, or paste this into your browser to complete the registration process:\n\n' +
+                'http://' + req.headers.host + '/confirmation/' + token + '\n\n' +
+                'If you did not request this, please ignore this email.\n'
+            },function(err, info){
+              if(err){
+                console.log(err);
+                req.flash("error", "error in sending registration email");
+                User.find({email: req.body.email}).remove({email: req.body.email}, function(){});
+                return res.redirect("back");
+              }
+              req.flash('success', 'An e-mail has been sent to ' + user.email + ' with further instructions.');
+              done(err, 'done');
+            });
+          }
 
-        // Generate token
-        function(done) {
-          console.log("gen token\n");
-          crypto.randomBytes(20, function(err, buf) {
-            var token = buf.toString("hex");
-            done(err, token);
-          });
-        },
-        function(token, done) {
-          var expTime = Date.now() + 3600000;
-          // TODO might not be able to do mongo op in the callback of another mongo op
-          User.findOneAndUpdate({ email: req.body.email },{$set:{
-            emailConfirmed: false, confirmToken: token}} 
-            ,function(err, user) {
-            if(err){
-              console.log("error finding user with given email" + err);
-              req.flash("error", "Something went wrong :(");
-            }
-            done(err, token, user);
-          });
-        },
-        function(token,user, done) {
-          console.log("sending mail\n");
-          var auth = {
-            auth: {
-              api_key: process.env.MAILGUNKEY,
-              domain: process.env.MAILGUNDOMAIN
-            }
-          };
-          var nodemailerMailgun = nodemailer.createTransport(mg(auth));
-
-          nodemailerMailgun.sendMail({
-            to: user.email,
-            from: process.env.TESTGMAIL,
-            subject: 'Node.js Registration Confirmation',
-            text: 'You are receiving this because you (or someone else) have registered for a NomTen account.\n\n' +
-              'Please click on the following link, or paste this into your browser to complete the registration process:\n\n' +
-              'http://' + req.headers.host + '/confirmation/' + token + '\n\n' +
-              'If you did not request this, please ignore this email.\n'
-          },function(err, info){
-            if(err){
-              console.log(err);
-              req.flash("error", "error in sending registration email");
-              return res.redirect("back");
-            }
-            req.flash('success', 'An e-mail has been sent to ' + user.email + ' with further instructions.');
-            done(err, 'done');
-          });
-          console.log("sent\n");
-        }
-
-        ], function(err) {if (err) return next(err);
-    res.redirect('/');
-  });
-     }
-  });
+          ], function(err) {
+          if (err) {
+            req.flash("error", "error in sending registration email");
+            User.find({email: req.body.email}).remove({email: req.body.email}, function(){});
+            return res.redirect("back");
+          }
+          res.redirect('/');
+        });
+       }
+    });
+  }
 });
 
 // Confirm User
@@ -132,8 +128,8 @@ router.get('/confirmation/:token', function(req, res) {
       req.flash("error", "something went wrong :(");
       return res.redirect("/");
     }
-    // TODO might not work since nested mongo calls
-    console.log("before find");
+
+    // Set user's email as verified
     User.findOneAndUpdate({ confirmToken: req.params.token },{$set:{
       emailConfirmed: true}} 
       ,function(err, user) {
@@ -154,17 +150,10 @@ router.post("/login", passport.authenticate("local",
     failureRedirect: "/",
     failureFlash: true
   }), function(req, res){
-  console.log(req.user.emailConfirmed);
-    // Check if user has confirmed account before allowing them in
-    //if (User.findOne({ email: req.body.email }).emailConfirmed) {
-    //  res.redirect("/users/" + req.user.username)
-    //}
-    //TODO Why is the whole user sent in request?
     if (req.user.emailConfirmed) {
       res.redirect("/users/" + req.user.username)
     } else {
-    //TODO Failure response
-    req.flash("error", "Email not confirmed.")
+      req.flash("error", "Please verify your email before logging in.")
     }
 });
 
@@ -182,55 +171,60 @@ router.get("/forgot", function(req, res){
 
 //SEND EMAIL WITH PASSWORD RESET TOKEN
 router.post("/forgot", function(req, res, next) {
-  async_pkg.waterfall([
-    function(done) {
-      crypto.randomBytes(20, function(err, buf) {
-        var token = buf.toString("hex");
-        done(err, token);
-      });
-    },
-    function(token, done) {
-      var expTime = Date.now() + 3600000;
-      User.findOneAndUpdate({ email: req.body.email },{$set:{resetPasswordToken:token, resetPasswordExpires:expTime} } ,function(err, user) {
-        if(err){
-          console.log("error finding user with given email" + err);
-          req.flash("error", "Something went wrong :(");
-          return res.redirect("/forgot");
-        }
-        done(err, token, user);
-      });
-    },
-    function(token, user, done) {
-      var auth = {
-        auth: {
-          api_key: process.env.MAILGUNKEY,
-          domain: process.env.MAILGUNDOMAIN
-        }
-      };
-      var nodemailerMailgun = nodemailer.createTransport(mg(auth));
+  if (!validateEmail(req.body.email)) {
+    req.flash("error", "email is invalid");
+    return res.redirect("/forgot");
+  } else {
+    async_pkg.waterfall([
+      function(done) {
+        crypto.randomBytes(20, function(err, buf) {
+          var token = buf.toString("hex");
+          done(err, token);
+        });
+      },
+      function(token, done) {
+        var expTime = Date.now() + 3600000;
+        User.findOneAndUpdate({ email: req.body.email },{$set:{resetPasswordToken:token, resetPasswordExpires:expTime} } ,function(err, user) {
+          if(err){
+            console.log("error finding user with given email" + err);
+            req.flash("error", "Something went wrong :(");
+            return res.redirect("/forgot");
+          }
+          done(err, token, user);
+        });
+      },
+      function(token, user, done) {
+        var auth = {
+          auth: {
+            api_key: process.env.MAILGUNKEY,
+            domain: process.env.MAILGUNDOMAIN
+          }
+        };
+        var nodemailerMailgun = nodemailer.createTransport(mg(auth));
 
-      nodemailerMailgun.sendMail({
-        to: user.email,
-        from: process.env.TESTGMAIL,
-        subject: 'Node.js Password Reset',
-        text: 'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n' +
-          'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
-          'http://' + req.headers.host + '/reset/' + token + '\n\n' +
-          'If you did not request this, please ignore this email and your password will remain unchanged.\n'
-      },function(err, info){
-        if(err){
-          console.log(err);
-          req.flash("error", "error in sending registration email");
-          return res.redirect("back");
-        }
-        req.flash('success', 'An e-mail has been sent to ' + user.email + ' with further instructions.');
-        done(err, 'done');
-      });
-    }
-  ], function(err) {
-    if (err) return next(err);
-    res.redirect('/forgot');
-  });
+        nodemailerMailgun.sendMail({
+          to: user.email,
+          from: process.env.TESTGMAIL,
+          subject: 'Node.js Password Reset',
+          text: 'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n' +
+            'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
+            'http://' + req.headers.host + '/reset/' + token + '\n\n' +
+            'If you did not request this, please ignore this email and your password will remain unchanged.\n'
+        },function(err, info){
+          if(err){
+            console.log(err);
+            req.flash("error", "error in sending registration email");
+            return res.redirect("back");
+          }
+          req.flash('success', 'An e-mail has been sent to ' + user.email + ' with further instructions.');
+          done(err, 'done');
+        });
+      }
+    ], function(err) {
+      if (err) return next(err);
+      res.redirect('/forgot');
+    });
+  }
 });
 
 //RESET PASSWORD FORM
@@ -334,10 +328,9 @@ router.post("/reset/:token", function(req, res) {
 });
 module.exports = router;
 
-
+// Checks if the given email is in a valid format
 function validateEmail(email) {
   // Regular Expression taken from https://stackoverflow.com/questions/46155/how-to-validate-an-email-address-in-javascript
   var emailRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-
   return email.match(emailRegex);
 }
