@@ -66,10 +66,9 @@ router.post("/register", function(req, res){
           function(token, done) {
             // Find User
             var expTime = Date.now() + 3600000;
-            // TODO use expTime
             // TODO resend confirmation email page
             User.findOneAndUpdate({ email: req.body.email },{$set:{
-              emailConfirmed: false, confirmToken: token}} 
+              emailConfirmed: false, confirmToken: token, confirmExpires: expTime}} 
               ,function(err, user) {
               if(err){
                 console.log("error finding user with given email" + err);
@@ -100,6 +99,7 @@ router.post("/register", function(req, res){
               if(err){
                 console.log(err);
                 req.flash("error", "error in sending registration email");
+                //TODO Try exec()
                 User.find({email: req.body.email}).remove({email: req.body.email}, function(){});
                 return res.redirect("back");
               }
@@ -122,12 +122,61 @@ router.post("/register", function(req, res){
   }
 });
 
+// Resend confirmation email page
+router.get("/confirmation/resend",function(req, res) {
+  res.render("forgot");
+});
+
+// Resend confirmation email
+router.post("/confirmation/resend", function(req, res, next) {
+  User.findOne({ email: req.params.email, confirmExpires: { $gt: Date.now() } }, function(err, user) {
+    if (!user){
+      req.flash('error', 'Email not found, please register for an account.');
+      return res.redirect('/');
+    }
+    else if (err){
+      console.log(err);
+      req.flash("error", "something went wrong :(");
+      return res.redirect("/");
+    }
+    User.findOneAndUpdate({ confirmToken: user.confirmToken },{$set:{
+      confirmExpires: Date.now() + 3600000}}); 
+    // Send confirmation email
+    var auth = {
+      auth: {
+        api_key: process.env.MAILGUNKEY,
+        domain: process.env.MAILGUNDOMAIN
+      }
+    };
+    var nodemailerMailgun = nodemailer.createTransport(mg(auth));
+
+    nodemailerMailgun.sendMail({
+      to: req.params.email,
+      from: process.env.TESTGMAIL,
+      subject: 'Node.js Registration Confirmation',
+      text: 'You are receiving this because you (or someone else) have registered for a NomTen account.\n\n' +
+        'Please click on the following link, or paste this into your browser to complete the registration process:\n\n' +
+        'http://' + req.headers.host + '/confirmation/' + user.confirmToken + '\n\n' +
+        'If you did not request this, please ignore this email.\n'
+    },function(err, info){
+      if(err){
+        console.log(err);
+        req.flash("error", "error in resending confirmation email");
+        return res.redirect("back");
+      }
+      req.flash('success', 'An e-mail has been sent to ' + req.params.email + ' with further instructions.');
+      done(err, 'done');
+      res.redirect('/');
+    });
+  });
+});
+
 // Confirm User
 router.get('/confirmation/:token', function(req, res) {
 
-  User.findOne({ confirmToken: req.params.token}, function(err, user) {
+  User.findOne({ confirmToken: req.params.token, confirmExpires: { $gt: Date.now() }}, function(err, user) {
     if (!user) {
-      req.flash('error', 'Confirmation link is invalid.');
+      req.flash('error', 'Confirmation link is invalid or expired.');
       return res.redirect('/');
     }
     else if (err){
@@ -159,8 +208,12 @@ router.post("/login", passport.authenticate("local",
   }), function(req, res){
     if (req.user.emailConfirmed) {
       res.redirect("/users/" + req.user.username)
-    } else {
+    } else if (req.user.confirmExpires > Date.now()){
       req.flash("error", "Please verify your email before logging in.")
+      res.redirect("confirmation/resend")
+    } else {
+      // delete user if email hasn't been confirmed bt the expire date
+      User.remove({email: req.body.email}).exec();
     }
 });
 
