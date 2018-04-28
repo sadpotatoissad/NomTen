@@ -245,6 +245,11 @@ router.post("/forgot", function(req, res, next) {
       function(token, done) {
         var expTime = Date.now() + 3600000;
         User.findOneAndUpdate({ email: req.body.email },{$set:{resetPasswordToken:token, resetPasswordExpires:expTime} } ,function(err, user) {
+          if (!user) {
+            req.flash("error", "Email address is not registered with an account.");
+            return res.redirect("/forgot");
+          }
+
           if(err){
             console.log("error finding user with given email" + err);
             req.flash("error", "Something went wrong :(");
