@@ -1,0 +1,16 @@
+<% include partials/header %>
+<div class="container">
+  <div class="col-md-8">
+    <h1>Resend Confirmation Email</h1>
+    <h4>Plese confirm your account before signing in.</h4>
+    <h4>Input your email if you would like to resend the confirmation email.</h4>
+    <form action="/confirmation/resend" method="POST">
+      <div class="form-group">
+        <label for="exampleInputEmail1">Email address</label>
+        <input class="form-control" type="email" name="email" placeholder="email">
+      </div>
+      <button class="btn btn-default">Submit</button>
+    </form>
+  </div>
+</div>
+<% include partials/footer %>

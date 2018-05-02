@@ -13,8 +13,8 @@ var express        = require("express"),
     mg             = require("nodemailer-mailgun-transport"),
     crypto         = require("crypto"),
     User           = require("./models/users");
+    schedule      = require("node-schedule")
 require('dotenv').config();
-mongoose.Promise = global.Promise;
 
 //require routes
 var indexRoutes      = require("./routes/index"),
@@ -55,5 +55,15 @@ app.use(function(req, res, next){
 app.use("/", indexRoutes);
 app.use("/", ingredientRoutes);
 app.use("/", recipeRoutes);
+
+// Clean database every Monday at 3 am
+var rule = new schedule.RecurrenceRule();
+rule.minute = 0;
+rule.hour = 3;
+rule.dayOfWeek = 1;
+
+var cleanDb = schedule.scheduleJob(rule, function(){
+  User.remove({emailConfirmed: false, confirmExpires: {$lt: Date.now()}}).exec();
+});
 
 app.listen(process.env.PORT||3000);

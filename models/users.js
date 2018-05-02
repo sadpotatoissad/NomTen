@@ -1,8 +1,14 @@
 var mongoose = require('mongoose');
 var passportLocalMongoose = require("passport-local-mongoose");
+
+mongoose.Promise = global.Promise;
+
 var UserSchema = mongoose.Schema({
   username: {type: String, unique: true, required: true},
   email:{type: String, unique: true, required: true},
+  emailConfirmed: Boolean,
+  confirmToken: String,
+  confirmExpires: Date,
   password: String,
   resetPasswordToken: String,
   resetPasswordExpires: Date,
