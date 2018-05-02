@@ -40,107 +40,111 @@ router.post("/register", function(req, res){
       email: req.body.email,
     });
 
-    if (User.findOne({email: req.body.email}) == null) {
-      console.log("email already exists");
-      req.flash("error", "A user with the given email is already registered");
-      return res.redirect("/register");
-    } else {
+    User.findOne({email: req.body.email}, function(err, user) {
+      if(err){
+        req.flash("error", err.message);
+        return res.redirect("/register");
+      }
+      if (user != null){
+        console.log("email already exists");
+        req.flash("error", "A user with the given email is already registered");
+        return res.redirect("/register");
+      }
 
-    // Registers user in the database
-    User.register(newUser, req.body.password, function(err, user){
-       if(err){
-         req.flash("error", err.message);
-         return res.redirect("/register");
-       } else {
-        // Send a confirmation email
+      // Registers user in the database
+      User.register(newUser, req.body.password, function(err, user){
+         if(err){
+           req.flash("error", err.message);
+           return res.redirect("/register");
+         } else {
+          // Send a confirmation email
+          async_pkg.waterfall([
 
-        async_pkg.waterfall([
+            // Generate token
+            function(done) {
+              crypto.randomBytes(20, function(err, buf) {
+                var token = buf.toString("hex");
+                done(err, token);
+              });
+            },
+            function(token, done) {
+              // Find User
+              var expTime = Date.now() + (3600000 * 48);
+              User.findOneAndUpdate({ email: req.body.email },{$set:{
+                emailConfirmed: false, confirmToken: token, confirmExpires: expTime}} 
+                ,function(err, user) {
+                if((!user) || err){
+                  console.log("error finding user with given email" + err);
+                  req.flash("error", "Something went wrong :(");
+                }
+                done(err, token, user);
+              });
+            },
+            function(token,user, done) {
+              // Send confirmation email
+              var auth = {
+                auth: {
+                  api_key: process.env.MAILGUNKEY,
+                  domain: process.env.MAILGUNDOMAIN
+                }
+              };
+              var nodemailerMailgun = nodemailer.createTransport(mg(auth));
 
-          // Generate token
-          function(done) {
-            crypto.randomBytes(20, function(err, buf) {
-              var token = buf.toString("hex");
-              done(err, token);
-            });
-          },
-          function(token, done) {
-            // Find User
-            var expTime = Date.now() + 3600000;
-            // TODO resend confirmation email page
-            User.findOneAndUpdate({ email: req.body.email },{$set:{
-              emailConfirmed: false, confirmToken: token, confirmExpires: expTime}} 
-              ,function(err, user) {
-              if(err){
-                console.log("error finding user with given email" + err);
-                req.flash("error", "Something went wrong :(");
-              }
-              done(err, token, user);
-            });
-          },
-          function(token,user, done) {
-            // Send confirmation email
-            var auth = {
-              auth: {
-                api_key: process.env.MAILGUNKEY,
-                domain: process.env.MAILGUNDOMAIN
-              }
-            };
-            var nodemailerMailgun = nodemailer.createTransport(mg(auth));
+              nodemailerMailgun.sendMail({
+                to: user.email,
+                from: process.env.TESTGMAIL,
+                subject: 'Node.js Registration Confirmation',
+                text: 'You are receiving this because you (or someone else) have registered for a NomTen account.\n\n' +
+                  'Please click on the following link, or paste this into your browser to complete the registration process:\n\n' +
+                  'http://' + req.headers.host + '/confirmation/' + token + '\n\n' +
+                  'If you did not request this, please ignore this email.\n'
+              },function(err, info){
+                if(err){
+                  console.log(err);
+                  req.flash("error", "error in sending registration email");
+                  User.remove({email: req.body.email}).exec();
+                  return res.redirect("back");
+                }
+                req.flash('success', 'An e-mail has been sent to ' + user.email + ' with further instructions.');
+                done(err, 'done');
+                res.redirect('/');
+              });
+            }
 
-            nodemailerMailgun.sendMail({
-              to: user.email,
-              from: process.env.TESTGMAIL,
-              subject: 'Node.js Registration Confirmation',
-              text: 'You are receiving this because you (or someone else) have registered for a NomTen account.\n\n' +
-                'Please click on the following link, or paste this into your browser to complete the registration process:\n\n' +
-                'http://' + req.headers.host + '/confirmation/' + token + '\n\n' +
-                'If you did not request this, please ignore this email.\n'
-            },function(err, info){
-              if(err){
-                console.log(err);
-                req.flash("error", "error in sending registration email");
-                //TODO Try exec()
-                User.find({email: req.body.email}).remove({email: req.body.email}, function(){});
-                return res.redirect("back");
-              }
-              req.flash('success', 'An e-mail has been sent to ' + user.email + ' with further instructions.');
-              done(err, 'done');
-              res.redirect('/');
-            });
-          }
-
-          ], function(err) {
-          if (err) {
-            req.flash("error", "error in sending registration email");
-            User.find({email: req.body.email}).remove({email: req.body.email}, function(){});
-            return res.redirect("back");
-          }
-        });
-       }
-    });
-  }
+            ], function(err) {
+            if (err) {
+              req.flash("error", "error in sending registration email");
+              User.remove({email: req.body.email}).exec();
+              return res.redirect("back");
+            }
+          });
+         }
+      });
+  });
   }
 });
 
 // Resend confirmation email page
 router.get("/confirmation/resend",function(req, res) {
-  res.render("forgot");
+  res.render("resend");
 });
 
 // Resend confirmation email
 router.post("/confirmation/resend", function(req, res, next) {
-  User.findOne({ email: req.params.email, confirmExpires: { $gt: Date.now() } }, function(err, user) {
+  User.findOne({ email: req.body.email, confirmExpires: { $gt: Date.now() } }, function(err, user) {
     if (!user){
       req.flash('error', 'Email not found, please register for an account.');
       return res.redirect('/');
-    }
-    else if (err){
+    } else if (user.emailConfirmed){
+      req.flash('error', 'Email has already been confirmed.');
+      return res.redirect('/');
+    } else if (err){
       console.log(err);
       req.flash("error", "something went wrong :(");
       return res.redirect("/");
     }
     User.findOneAndUpdate({ confirmToken: user.confirmToken },{$set:{
-      confirmExpires: Date.now() + 3600000}}); 
+      confirmExpires: Date.now() + (3600000 * 48)}}); 
     // Send confirmation email
     var auth = {
       auth: {
@@ -151,7 +155,7 @@ router.post("/confirmation/resend", function(req, res, next) {
     var nodemailerMailgun = nodemailer.createTransport(mg(auth));
 
     nodemailerMailgun.sendMail({
-      to: req.params.email,
+      to: req.body.email,
       from: process.env.TESTGMAIL,
       subject: 'Node.js Registration Confirmation',
       text: 'You are receiving this because you (or someone else) have registered for a NomTen account.\n\n' +
@@ -164,8 +168,7 @@ router.post("/confirmation/resend", function(req, res, next) {
         req.flash("error", "error in resending confirmation email");
         return res.redirect("back");
       }
-      req.flash('success', 'An e-mail has been sent to ' + req.params.email + ' with further instructions.');
-      done(err, 'done');
+      req.flash('success', 'An e-mail has been sent to ' + req.body.email + ' with further instructions.');
       res.redirect('/');
     });
   });
@@ -174,47 +177,52 @@ router.post("/confirmation/resend", function(req, res, next) {
 // Confirm User
 router.get('/confirmation/:token', function(req, res) {
 
-  User.findOne({ confirmToken: req.params.token, confirmExpires: { $gt: Date.now() }}, function(err, user) {
+  User.findOneAndUpdate({ confirmToken: req.params.token, confirmExpires: { $gt: Date.now() }}, {$set:{
+      emailConfirmed: true}}, function(err, user) {
     if (!user) {
       req.flash('error', 'Confirmation link is invalid or expired.');
       return res.redirect('/');
-    }
-    else if (err){
+    } else if (user.emailConfirmed){
+      req.flash('error', 'Email has already been confirmed.');
+      return res.redirect('/');
+    } else if (err){
       console.log(err);
       req.flash("error", "something went wrong :(");
       return res.redirect("/");
     }
 
-    // Set user's email as verified
-    User.findOneAndUpdate({ confirmToken: req.params.token },{$set:{
-      emailConfirmed: true}} 
-      ,function(err, user) {
-        console.log("verified user email");
-      if(err){
-        console.log("error finding user with given email" + err);
-        req.flash("error", "Something went wrong :(");
-      }
-    });
+    console.log("verified user email");
     req.flash("success", "Email confirmed.")
     res.redirect('/');
   });
 });
 
 //handle user login
-router.post("/login", passport.authenticate("local",
+router.post("/login", function(req, res){
+  passport.authenticate("local",
   {
     failureRedirect: "/",
     failureFlash: true
-  }), function(req, res){
-    if (req.user.emailConfirmed) {
-      res.redirect("/users/" + req.user.username)
-    } else if (req.user.confirmExpires > Date.now()){
-      req.flash("error", "Please verify your email before logging in.")
-      res.redirect("confirmation/resend")
-    } else {
-      // delete user if email hasn't been confirmed bt the expire date
-      User.remove({email: req.body.email}).exec();
+  }, function(err, user, info) {
+    if (!user.emailConfirmed) {
+      if (user.confirmExpires > Date.now()){
+        req.flash("error", "Please verify your email before logging in.")
+        return res.redirect("confirmation/resend")
+      } else {
+        // delete user if email hasn't been confirmed by the expire date
+        User.remove({email: req.body.email}).exec();
+        req.flash("error", "Password or username is incorrect");
+        return res.redirect("/");
+      }
     }
+    req.logIn(user, function(err) {
+      if (err) { 
+        req.flash("error", err);
+        return res.redirect("/"); 
+      }
+      return res.redirect('/users/' + user.username);
+    });
+  }) (req, res);;
 });
 
 //logout route
@@ -248,6 +256,11 @@ router.post("/forgot", function(req, res, next) {
           if (!user) {
             req.flash("error", "Email address is not registered with an account.");
             return res.redirect("/forgot");
+          }
+
+          if (!user.emailConfirmed) {
+            req.flash("error", "Please confirm email address before requesting a password reset.");
+            return res.redirect("/forgot"); 
           }
 
           if(err){
@@ -396,6 +409,6 @@ module.exports = router;
 // Checks if the given email is in a valid format
 function validateEmail(email) {
   // Regular Expression taken from https://stackoverflow.com/questions/46155/how-to-validate-an-email-address-in-javascript
-  var emailRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-  return email.match(emailRegex);
+  var emailRegex = RegExp(/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
+  return emailRegex.test(email);
 }
