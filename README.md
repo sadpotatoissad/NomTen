@@ -2,6 +2,8 @@
 A web application that allows users to maintain a virtualization of their fridge and get recipe suggests or search for relevant recipes.
 This is a updated and mostly rewritten version of a group project from CSC309 at the University of Toronto by Linda Zhang, Jesse Jaura and David Wahrhaftig
 
+IMPORTANT: If you are registering a new user I would need to white list your email in mailgun first for you to be able to recieve the registration email and also the emails for password reset. Please email me at lindamayzhang@gmail.com if you wish to have your email white listed. 
+
 NomTen: A personalized online culinary assistant
 
 NomTen is a Web application which allows users to maintain a virtualization of their real life fridge and search for recipes. This application allows for the personalization of the virtual fridge, user can add, remove, update ingredients which are displayed in their virtual Fridge. The ingredients is divided into 6 categories. To add an ingredient, to the Fridge the user selects the white plus sign icon from the correct category is reveal an input and then inputs the ingredient name and presses the black plus sign icon. To delete an ingredient hover over an ingredient and press the trashcan icon. 
