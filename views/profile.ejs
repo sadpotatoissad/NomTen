@@ -35,7 +35,21 @@
           <li><a href="/">Sign In</a></li>
           <li><a href="/register">Sign Up</a></li>
           <% } else { %>
-          <li><a href="#"><i class="fa fa-user" ></i> <%=currentUser.username%></a></li>
+          <li>
+          <a class="btn dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-user" ></i> <%=currentUser.username%></a>
+          <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+            <% if (currentUser.facebook.token) { %>
+              <% if (currentUser.local) { %>
+              <a href="/unlink/facebook" class="btn btn-primary"><span class="fa fa-facebook"></span> Unlink Facebook</a>
+              <% } else { %>
+              <a href="/unlink/facebook" class="btn btn-primary disabled"><span class="fa fa-facebook"></span> Unlink Facebook</a>
+              <% } %>
+            <% } else { %>
+            <a href="/link/facebook" class="btn btn-primary"><span class="fa fa-facebook"></span> Connect Facebook</a>
+            <% } %>
+            <a href="/update_password" class="btn btn-warning"> Change Password</a>
+          </div>
+          </li>
           <li><a href="/logout">Logout</a></li>
           <% } %>
         </ul>

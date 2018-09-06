@@ -12,7 +12,6 @@
     <link rel="stylesheet" href="/stylesheets/landing.css">
     <link href="https://fonts.googleapis.com/css?family=Pacifico" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js" type="text/javascript" async></script>
-    <script src="/scripts/landing.js" charset="utf-8"></script>
   </head>
   <body>
     <nav class="navbar navbar-default">
@@ -30,7 +29,20 @@
             <% if(!currentUser){ %>
             <li><a href="/register">Sign Up</a></li>
             <% } else { %>
-            <li><a href="#"><i class="fa fa-user" ></i> <%=currentUser.username%></a></li>
+            <li><a class="btn dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-user" ></i> <%=currentUser.username%></a>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+              <% if (currentUser.facebook.token) { %>
+                <% if (currentUser.local) { %>
+                <a href="/unlink/facebook" class="btn btn-primary"><span class="fa fa-facebook"></span> Unlink Facebook</a>
+                <% } else { %>
+                <a href="/unlink/facebook" class="btn btn-primary disabled"><span class="fa fa-facebook"></span> Unlink Facebook</a>
+                <% } %>
+              <% } else { %>
+              <a href="/link/facebook" class="btn btn-primary"><span class="fa fa-facebook"></span> Connect Facebook</a>
+            <% } %>
+              <a href="/update_password" class="btn btn-warning"> Change Password</a>
+            </div>
+            </li>
             <li><a href="/logout">Logout</a></li>
             <% } %>
           </ul>
@@ -38,31 +50,32 @@
       </div>
     </nav>
 
-
     <div class="container">
       <% if(error && error.length > 0){ %>
-      <div class="alert alert-danger" role="alert">
-        <%= error %>
+      <div class="alert alert-danger" role="alert" style="position: sticky; z-index: 100;" >
+        <%- error %>
       </div>
       <% } %>
       <% if(success && success.length > 0){ %>
-      <div class="alert alert-success" role="alert">
-        <%= success %>
+      <div class="alert alert-success" role="alert" style="position: sticky; z-index: 100;">
+        <%- success %>
       </div>
       <% } %>
     </div>
+
     <div class="container" id="landing-header">
       <h1>Welcome to <span>NomTen</span>!</h1>
       <% if(!currentUser){ %>
       <div id="loginPosition" class="container col-sm-12">
-        <form action="/login" method="POST" class="form-inline">
-          <div class="form-group" id=login>
-            <input type="text" name="username" placeholder="username" class="from-control input-sm">
+        <form action="/login" method="POST" class="form-group">
+          <div class="form-inline" id=login>
+            <input type="text" name="username" placeholder="email" class="from-control input-sm">
             <input type="password" name="password" placeholder="password" class="from-control input-sm">
+            <input type="submit" value="Login" class="btn btn-default btn-sm">
           </div>
-          <input type="submit" value="Login" class="btn btn-default btn-sm">
-        </form>
-        <a id=reset href="/forgot">Forgot Password?</a>
+          <a href="/auth/facebook" class="btn btn-primary"><span class="fa fa-facebook"></span> Login with Facebook</a>
+          <a id=reset href="/forgot" class="btn btn-warning btn-sm">Forgot Password?</a>
+      </form>
       </div>
       <% } else { %>
       <a id="showPofile" class="btn btn-lg" href="/users/<%=currentUser.username%>">View Fridge</a>

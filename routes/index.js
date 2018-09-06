@@ -18,6 +18,7 @@ router.get("/", function(req, res){
 router.get("/users/:username", middlewareObj.isLoggedIn, function(req, res){
   res.render("profile");
 });
+
 //===============================
 //         AUTH ROUTES
 //===============================
@@ -38,6 +39,7 @@ router.post("/register", function(req, res){
     var newUser = new User({
       username: req.body.username,
       email: req.body.email,
+      local: true
     });
 
     User.findOne({email: req.body.email}, function(err, user) {
@@ -206,11 +208,12 @@ router.post("/login", function(req, res){
   }, function(err, user, info) {
     if (!user.emailConfirmed) {
       if (user.confirmExpires > Date.now()){
-        req.flash("error", "Please verify your email before logging in.")
-        return res.redirect("confirmation/resend")
+      	message = "Please verify your email before logging in. <a href='/confirmation/resend'> Click here to resend confirmation email. </a>";
+        req.flash("error", message)
+        return res.redirect("/")
       } else {
         // delete user if email hasn't been confirmed by the expire date
-        User.remove({email: req.body.email}).exec();
+        User.remove({email: user.email}).exec();
         req.flash("error", "Password or username is incorrect");
         return res.redirect("/");
       }
@@ -259,7 +262,7 @@ router.post("/forgot", function(req, res, next) {
           }
 
           if (!user.emailConfirmed) {
-            req.flash("error", "Please confirm email address before requesting a password reset.");
+          	req.flash("error", "Please confirm email address before requesting a password reset. <a href='/confirmation/resend'> Click here to resend confirmation email</a>.");
             return res.redirect("/forgot"); 
           }
 
@@ -349,6 +352,7 @@ router.post("/reset/:token", function(req, res) {
             }
             user.resetPasswordToken = undefined;
             user.resetPasswordExpires = undefined;
+            user.local = true;
 
             user.save(function(err) {
               if (err) {
@@ -404,6 +408,55 @@ router.post("/reset/:token", function(req, res) {
     res.redirect("/");
   });
 });
+
+router.get("/update_password", middlewareObj.isLoggedIn, function(req, res){
+	res.render("update");
+})
+router.post("/update_password", middlewareObj.isLoggedIn, function(req, res){
+    user = req.user;
+    if (req.body.newPassword === req.body.confirm) {
+      if (req.user.local) {
+      user.changePassword(req.body.oldPassword, req.body.newPassword, function(err) {
+        if (err) {
+          if (err.name == 'IncorrectPasswordError') {
+          	req.flash("error", "Password is incorrect.");
+          } else {
+          	req.flash("error", "Something went Wrong :( password not updated");
+          }
+          return res.redirect("/update_password");
+        }
+        user.save(function(err) {
+          if (err) {
+            req.flash("error", "Something went Wrong :( password not updated");
+            return res.redirect("/update_password");
+          };
+          req.flash("success", "Password has successfully been changed.");
+          return res.redirect("/users/home");
+        });
+      });
+  	  } else {
+  	  	user.setPassword(req.body.newPassword, function(err) {
+  	  		if (err) {
+			  	req.flash("error", "Something went Wrong :( password not updated");
+			 	return res.redirect("/update_password");
+  	  		}
+  	  		user.local = true;
+	        user.save(function(err) {
+	          if (err) {
+	            req.flash("error", "Something went Wrong :( password not updated");
+	            return res.redirect("/update_password");
+	          };
+	          req.flash("success", "Password has successfully been changed.");
+	          return res.redirect("/users/home");
+	        });
+  	  	})
+  	  }
+    } else {
+      req.flash("error", "Passwords do not match.");
+      return res.redirect('back');
+    }
+})
+
 module.exports = router;
 
 // Checks if the given email is in a valid format
