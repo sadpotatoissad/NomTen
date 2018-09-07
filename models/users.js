@@ -15,6 +15,10 @@ var UserSchema = mongoose.Schema({
     id: String,
     token: String
   },
+  google: {
+    id: String,
+    token: String
+  },
   resetPasswordToken: String,
   resetPasswordExpires: Date,
   proteinList: [String],

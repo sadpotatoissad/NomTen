@@ -15,7 +15,8 @@ var express        = require("express"),
     User           = require("./models/users"),
     schedule      = require("node-schedule"),
     facebookPassport = require('passport-facebook'), 
-    FacebookStrategy = require('passport-facebook').Strategy;
+    facebookStrategy = require('passport-facebook').Strategy,
+    googleStrategy = require('passport-google-oauth').OAuth2Strategy;
 require('dotenv').config();
 
 //require routes
@@ -23,7 +24,7 @@ var indexRoutes      = require("./routes/index"),
     ingredientRoutes = require("./routes/ingredients"),
     recipeRoutes     = require("./routes/recipe");
 
-
+/*
 app.use((req, res, next) => {
   	if (req.header("x-forwarded-proto") !== "https") {
     	res.redirect(`https://${req.header('host')}${req.url}`);
@@ -31,7 +32,7 @@ app.use((req, res, next) => {
     	next();
   	}
 });
-
+*/
 
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
@@ -69,10 +70,11 @@ app.use("/", indexRoutes);
 app.use("/", ingredientRoutes);
 app.use("/", recipeRoutes);
 
-passport.use(new FacebookStrategy({
+// FACEBOOK LOGIN
+passport.use(new facebookStrategy({
     clientID: process.env.FB_APP_ID,
     clientSecret: process.env.FB_APP_SECRET,
-    callbackURL: "http://nomthirteen.herokuapp.com/auth/facebook/callback",
+    callbackURL: process.env.FB_CALLBACK_URL,
     profileFields: ['name', 'emails'],
     passReqToCallback : true
 
@@ -118,7 +120,7 @@ passport.use(new FacebookStrategy({
         }
         });
       }
-    })
+    });
   } else { 
   // User is logged in so link fb account
     var user = req.user;
@@ -130,7 +132,6 @@ passport.use(new FacebookStrategy({
       }
       return cb(null, user);
     })
-
   }
 }));
 
@@ -152,11 +153,114 @@ app.get('/link/facebook/callback',
 
 app.get('/unlink/facebook', function(req, res) {
   var user = req.user;
-  user.facebook = undefined;
-  user.save(function(error){
+  // Check that facebook account exists, and if there is another method 
+  // to login once removing facebook account
+  if (((user.local || user.toObject().google) && user.toObject().facebook)) {
+    user.facebook = undefined;
+    user.save(function(error){
+      res.redirect('back');
+    });
+  } else {
+    req.flash('error', "Cannot unlink Facebook account.")
     res.redirect('back');
+  }
+});
+
+// GOOGLE LOGIN
+passport.use(new googleStrategy({
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: process.env.GOOGLE_CALLBACK_URL,
+    userProfileURL: "https://www.googleapis.com/oauth2/v3/userinfo",
+    scope: ['email'],
+    passReqToCallback : true
+  }, function(req, accessToken, refreshToken, profile, cb) {
+
+  if(!req.user) {
+    User.findOne({'google.id' : profile.id}, function(error, user) {
+      if (error) {
+        cb(error);
+      }
+
+      // User already has acc on db
+      if (user) {
+        return cb(null, user);
+      } else {
+        User.findOne({'email': profile.emails[0].value}, function(error, user) {
+        
+        if (error) {
+          cb(error);
+        }
+
+        // email already in use
+        if (user){
+          req.flash('error', 'Email associated with Google account already in use. Please log in first and then connect Google account.');
+          cb(null);
+        } else {
+
+        var newUser = new User({
+        username: profile.displayName,
+        email: profile.emails[0].value,
+        emailConfirmed: true,
+        google: {
+          id: profile.id,
+          token: accessToken
+        }});
+        newUser.save(function(error) {
+          if (error) {
+            console.log(error);
+          }
+          return cb(null, newUser);
+          })
+        }
+        });
+      }
+    });
+  } else { 
+  // User is logged in so link fb account
+    var user = req.user;
+    user.google.id = profile.id;
+    user.google.token = accessToken;
+    user.save(function(error) {
+      if (error) {
+        console.log(error);
+      }
+      return cb(null, user);
+    })
+  }
   })
-})
+);
+
+app.get('/auth/google', passport.authenticate('google', {scope:'email'}));
+
+app.get('/auth/google/callback',
+    passport.authenticate('google', {
+        successRedirect: '/users/google',
+        failureRedirect: '/'
+    }));
+
+app.get('/link/google', passport.authorize('google', {scope: 'email'}));
+
+app.get('/link/google/callback',
+    passport.authorize('google', {
+        successRedirect: '/users/google',
+        failureRedirect: '/'
+    }));
+
+app.get('/unlink/google', function(req, res) {
+  var user = req.user;
+  // Check that google account exists, and if there is another method 
+  // to login once removing google account
+  if ((user.local || user.toObject().facebook) && user.toObject().google) {
+    user.google = undefined;
+    user.save(function(error){
+      res.redirect('back');
+    });
+  } else {
+    req.flash('error', "Cannot unlink Google account.")
+    res.redirect('back');
+  }
+});
 
 // Clean database every Monday at 3 am
 var rule = new schedule.RecurrenceRule();
