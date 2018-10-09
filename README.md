@@ -2,7 +2,7 @@
 A web application that allows users to maintain a virtualization of their fridge and get recipe suggests or search for relevant recipes.
 This is a updated and mostly rewritten version of a group project from CSC309 at the University of Toronto by Linda Zhang, Jesse Jaura and David Wahrhaftig
 https://nomten.herokuapp.com/
-Sample User: JonSnow Pwd: 12345
+Sample User: jonsnow@email.com Pwd: 12345
 IMPORTANT: If you are registering a new user I would need to white list your email in mailgun first for you to be able to recieve the registration email and also the emails for password reset. Please email me at lindamayzhang@gmail.com if you wish to have your email white listed. 
 
 NomTen: A personalized online culinary assistant
